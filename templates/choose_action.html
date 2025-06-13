@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie Edits - Choose Action</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #b000f0;
+            --primary-hover: #d400d4;
+            --bg: #ffffff;
+            --card-bg: #f3f3f3;
+            --text-main: #000000;
+            --text-sub: #666666;
+            --shadow: 0 4px 24px rgba(176,0,240,0.08);
+            --radius: 18px;
+        }
+        html, body {
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: var(--text-main);
+        }
+        .navbar {
+            background: var(--bg);
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            padding: 0.7rem 0;
+        }
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: var(--primary);
+            font-family: 'Poppins', 'Inter', Arial, sans-serif;
+        }
+        .logo img {
+            height: 44px;
+            margin-right: 12px;
+            border-radius: 10px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.08rem;
+            font-family: 'Inter', Arial, sans-serif;
+            transition: color 0.2s;
+            padding: 0.2em 0.5em;
+            border-radius: 8px;
+        }
+        .nav-links a:hover {
+            background: var(--card-bg);
+            color: var(--primary);
+        }
+        .main-flex {
+            display: flex;
+            flex-direction: row;
+            max-width: 1100px;
+            margin: 60px auto 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            min-height: 420px;
+        }
+        .image-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 32px 8px 32px 32px;
+        }
+        .image-side img {
+            max-width: 100%;
+            max-height: 380px;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .download-btn {
+            margin-top: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+            background: var(--primary);
+            color: #fff;
+            padding: 0.7em 1.3em;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            box-shadow: 0 2px 8px #b000f022;
+            transition: background 0.18s;
+        }
+        .download-btn:hover {
+            background: var(--primary-hover);
+            color: #fff;
+        }
+        .download-btn .iconify {
+            font-size: 1.3em;
+        }
+        .feature-side {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 32px 32px 32px 16px;
+        }
+        .feature-title {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1.2em;
+            letter-spacing: 1px;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            width: 100%;
+        }
+        .feature-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 0.7em 1.1em;
+            font-size: 1.01rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 2px 8px #b000f022;
+            transition: background 0.18s, color 0.18s, transform 0.14s, box-shadow 0.14s;
+            min-width: 0;
+            min-height: 44px;
+            justify-content: flex-start;
+            white-space: nowrap;
+        }
+        .feature-btn span.iconify {
+            font-size: 1.4em;
+            margin-right: 0.2em;
+        }
+        .feature-btn:hover {
+            background: var(--primary-hover);
+            color: #fff;
+            transform: scale(1.04);
+            box-shadow: 0 8px 24px #b000f033;
+        }
+        @media (max-width: 900px) {
+            .main-flex { flex-direction: column; }
+            .image-side { padding: 18px 8px 0 8px !important; justify-content: center !important; }
+            .feature-side { padding: 18px 8px 18px 8px !important; align-items: center !important; }
+            .feature-list { grid-template-columns:repeat(2,minmax(140px,1fr)) !important; }
+        }
+        @media (max-width: 600px) {
+            .feature-list { grid-template-columns:1fr !important; }
+            .feature-btn { font-size:0.97rem !important; padding:0.6em 0.7em !important; }
+        }
+        .footer {
+            background: var(--bg);
+            color: var(--text-sub);
+            padding: 2em 0 1.2em 0;
+            text-align: center;
+            font-size: 1.01rem;
+            border-top: 1px solid #ececec;
+            margin-top: 3em;
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.5em;
+            transition: color 0.3s;
+        }
+        .footer a:hover {
+            color: var(--primary-hover);
+        }
+    </style>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.jpg') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="nav-links">
+                <a href="/">BG REMOVE</a>
+                <a href="/upscale/{{ filename }}">IMAGE UPSCALE</a>
+                <a href="/replace_bg/{{ filename }}">ADD BACKGROUND</a>
+            </div>
+        </div>
+    </nav>
+    <div class="main-flex">
+        <div class="image-side">
+            <img src="{{ url_for('show_upload', filename=filename) }}" alt="Preview">
+            <a href="{{ url_for('show_upload', filename=filename) }}" download class="download-btn">
+                <span class="iconify" data-icon="mdi:download"></span> Download
+            </a>
+        </div>
+        <div class="feature-side">
+            <div class="feature-title">What would you like to do?</div>
+            <div class="feature-list">
+                <a class="feature-btn" href="/remove_bg_action/{{ filename }}"><span class="iconify" data-icon="mdi:scissors-cutting"></span> Remove Background</a>
+                <a class="feature-btn" href="/auto_enhance/{{ filename }}"><span class="iconify" data-icon="mdi:magic-wand"></span> AI Auto Enhance</a>
+                <a class="feature-btn" href="/upscale/{{ filename }}"><span class="iconify" data-icon="mdi:image-size-select-large"></span> Upscale Image</a>
+                <a class="feature-btn" href="/replace_bg/{{ filename }}"><span class="iconify" data-icon="mdi:image-filter-center-focus-strong"></span> Add/Change Background</a>
+                <a class="feature-btn" href="/edit/{{ filename }}"><span class="iconify" data-icon="mdi:image-edit"></span> Edit</a>
+                <a class="feature-btn" href="/profile_pic_maker/{{ filename }}"><span class="iconify" data-icon="mdi:account-circle"></span> Profile Pic Maker</a>
+                <!-- <a class="feature-btn" href="/object_eraser/{{ filename }}"><span class="iconify" data-icon="mdi:eraser"></span> Object Eraser</a> -->
+                <a class="feature-btn" href="/smart_resize"><span class="iconify" data-icon="mdi:aspect-ratio"></span> Smart Resize</a>
+                <a class="feature-btn" href="/slide_creator"><span class="iconify" data-icon="mdi:monitor-dashboard"></span> Slide Creator</a>
+                <a class="feature-btn" href="/resume_shot"><span class="iconify" data-icon="mdi:account-badge"></span> Resume Shot</a>
+                <a class="feature-btn" href="/color_corrector"><span class="iconify" data-icon="mdi:palette"></span> Color Corrector</a>
+                <a class="feature-btn" href="/sketch_enhancer"><span class="iconify" data-icon="mdi:draw"></span> Sketch Enhancer</a>
+                <a class="feature-btn" href="/note_cleaner"><span class="iconify" data-icon="mdi:note-text"></span> Note Cleaner</a>
+                <a class="feature-btn" href="/transparent_icon"><span class="iconify" data-icon="mdi:alpha-t-box-outline"></span> Transparent Icon</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        &copy; 2025 Genie Edits &mdash; Edit with AI. For Free. Forever. ✨
+    </div>
+</body>
+</html>

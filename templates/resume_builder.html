@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resume Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png.png') }}">
+    <style>
+        body { background: #F8F9FC; margin: 0; font-family: 'Poppins', 'Nunito', Arial, sans-serif; }
+        .resume-main { max-width: 1100px; margin: 2.5em auto; background: #fff; border-radius: 24px; box-shadow: 0 8px 32px #7B61FF18; padding: 2.5em 2em; display:flex;gap:2.5em;align-items:flex-start; }
+        .progress-bar { display: flex; align-items: center; gap: 0.7em; margin-bottom: 2.5em; }
+        .progress-step { flex: 1; height: 7px; border-radius: 7px; background: #e0e0e0; transition: background 0.3s; }
+        .progress-step.active { background: linear-gradient(90deg,#7B61FF 0%,#A084FF 100%); }
+        .progress-labels { display: flex; justify-content: space-between; font-size: 1em; color: #888; margin-bottom: 1.2em; }
+        .section-heading { font-size: 2em; font-weight: 700; color: #7B61FF; margin-bottom: 0.3em; border-bottom: 2.5px solid #A084FF33; display: inline-block; padding-bottom: 0.1em; letter-spacing: 0.5px; }
+        .step-card { background: #F8F9FC; border-radius: 18px; box-shadow: 0 2px 12px #7B61FF11; padding: 2em 1.5em; margin-bottom: 2em; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 1.5em; }
+        .form-col { flex: 1 1 320px; min-width: 220px; }
+        .form-group { display: flex; align-items: center; margin-bottom: 1.2em; }
+        .form-group label { font-weight: 600; color: #7B61FF; margin-right: 0.7em; min-width: 120px; display: flex; align-items: center; font-size: 1.08em; }
+        .form-group .icon { margin-right: 0.5em; font-size: 1.2em; }
+        .form-group input, .form-group textarea { flex: 1; border-radius: 10px; border: 1.5px solid #e0e0e0; padding: 0.7em 1em; font-size: 1em; background: #fff; transition: border 0.2s; box-shadow: 0 1px 4px #A084FF11; }
+        .form-group input:focus, .form-group textarea:focus { border: 1.5px solid #A084FF; outline: none; }
+        .form-group textarea { resize: vertical; min-height: 38px; }
+        .char-count { color: #A084FF; font-size: 0.95em; margin-left: 0.7em; }
+        .add-btn, .remove-btn, .btn, .btn-accent {
+    font-size: 0.98em !important;
+    padding: 0.45em 1.3em !important;
+    border-radius: 999px !important;
+    min-width: 0;
+    min-height: 0;
+    line-height: 1.2;
+    box-shadow: 0 1px 6px #7B61FF11;
+}
+.add-btn, .remove-btn {
+    padding: 0.25em 0.9em !important;
+    font-size: 0.95em !important;
+}
+.btn.next-btn, .btn#download-pdf {
+    font-size: 1em !important;
+    padding: 0.55em 1.5em !important;
+}
+.btn {
+    margin-top: 0.7em !important;
+    background: linear-gradient(90deg,#7B61FF 0%,#A084FF 100%); color: #fff; border: none; border-radius: 999px; padding: 0.5em 1.2em; font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 1em; transition: box-shadow 0.2s, background 0.2s; box-shadow: 0 2px 12px #7B61FF33; letter-spacing: 0.5px; min-width: 0;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.next-btn:hover, .btn#download-pdf:hover { box-shadow: 0 0 16px 2px #A084FF66; background: linear-gradient(90deg,#A084FF 0%,#7B61FF 100%); }
+.add-btn, .remove-btn { background: #e6e6ff; color: #7B61FF; border: none; border-radius: 8px; padding: 0.2em 0.8em; font-weight: 600; cursor: pointer; font-size: 0.95em; margin-left: 0.4em; transition: background 0.2s; min-width: 0; }
+.add-btn:hover { background: #ede7ff; }
+.remove-btn { background: #ffe6e6; color: #b00020; }
+.remove-btn:hover { background: #ffd6d6; }
+.btn-accent { background: linear-gradient(90deg,#7B61FF 0%,#A084FF 100%); color: #fff; border: none; border-radius: 999px; padding: 0.5em 1.2em; font-weight: 700; font-size: 1em; cursor: pointer; box-shadow: 0 2px 8px #7B61FF11; transition: background 0.18s; min-width: 0; }
+.btn-accent:hover { background: linear-gradient(90deg,#A084FF 0%,#7B61FF 100%); }
+        .tag-input { display: flex; flex-wrap: wrap; gap: 0.4em; background: #f7f7fa; border-radius: 8px; padding: 0.5em; border: 1px solid #e0e0e0; margin-bottom: 1em; }
+        .tag { background: #ece1ff; color: #7B61FF; border-radius: 8px; padding: 0.2em 0.7em; display: flex; align-items: center; font-size: 1em; }
+        .tag .remove-tag { margin-left: 0.3em; cursor: pointer; font-weight: bold; }
+        .template-list { display: flex; gap: 1em; margin: 1.5em 0 1em 0; justify-content: flex-start; }
+        .template-thumb { background: #f8f8ff; border-radius: 14px; border: 2.5px solid #eee; cursor: pointer; padding: 0.8em 0.7em; text-align: center; min-width: 120px; transition: border 0.2s, box-shadow 0.2s, transform 0.2s; font-weight: 600; font-size: 1.08em; }
+        .template-thumb.selected { border: 2.5px solid #7B61FF; box-shadow: 0 2px 16px #7B61FF22; background: #f3eaff; transform: scale(1.06); }
+        .btn { background: linear-gradient(90deg,#7B61FF 0%,#A084FF 100%); color: #fff; border: none; border-radius: 999px; padding: 0.5em 1.2em; font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 1em; transition: box-shadow 0.2s, background 0.2s; box-shadow: 0 2px 12px #7B61FF33; letter-spacing: 0.5px; min-width: 0; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn.next-btn:hover, .btn#download-pdf:hover { box-shadow: 0 0 16px 2px #A084FF66; background: linear-gradient(90deg,#A084FF 0%,#7B61FF 100%); }
+        .add-btn, .remove-btn { background: #e6e6ff; color: #7B61FF; border: none; border-radius: 8px; padding: 0.2em 0.8em; font-weight: 600; cursor: pointer; font-size: 0.95em; margin-left: 0.4em; transition: background 0.2s; min-width: 0; }
+        .add-btn:hover { background: #ede7ff; }
+        .remove-btn { background: #ffe6e6; color: #b00020; }
+        .remove-btn:hover { background: #ffd6d6; }
+        .btn-accent { background: linear-gradient(90deg,#7B61FF 0%,#A084FF 100%); color: #fff; border: none; border-radius: 999px; padding: 0.5em 1.2em; font-weight: 700; font-size: 1em; cursor: pointer; box-shadow: 0 2px 8px #7B61FF11; transition: background 0.18s; min-width: 0; }
+        .btn-accent:hover { background: linear-gradient(90deg,#A084FF 0%,#7B61FF 100%); }
+        .preview-section {
+            flex: 1 1 420px;
+            min-width: 320px;
+            max-width: 100%;
+            margin-top: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        #resume-preview {
+            min-height: 200px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            background: #fcfcff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px #7B61FF11;
+            padding: 2em 1.5em;
+            overflow-x: auto;
+        }
+        @media (max-width: 1200px) {
+            .resume-main { flex-direction: column; gap: 1.5em; }
+            .preview-section { max-width: 100vw; min-width: 0; }
+        }
+        @media (max-width: 900px) {
+            .resume-main, .resume-container { padding: 1em; }
+            .form-row { flex-direction: column; gap: 0.5em; }
+            .form-col { min-width: unset; }
+            .navbar .container { flex-direction: column; gap: 1em; padding: 0 1em; }
+            .navbar-search { width: 100%; margin: 0.5em 0; }
+            .tool-search-bar-container { width: 100%; }
+            .preview-section { padding: 0; }
+            #resume-preview { padding: 1em 0.5em; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Start Creating button removed as requested -->
+            </div>
+        </div>
+    </nav>
+    <div class="resume-main" style="display:flex;gap:2.5em;align-items:flex-start;">
+        <div style="flex:1 1 420px;min-width:320px;max-width:520px;">
+            <div class="progress-bar">
+                <div class="progress-step" id="step-bar-1"></div>
+                <div class="progress-step" id="step-bar-2"></div>
+                <div class="progress-step" id="step-bar-3"></div>
+                <div class="progress-step" id="step-bar-4"></div>
+            </div>
+            <div class="progress-labels">
+                <span>Fill Content</span>
+                <span>Choose Template</span>
+                <span>Preview</span>
+                <span>Download</span>
+            </div>
+            <form id="resume-form" autocomplete="off">
+                <!-- Step 1: Content -->
+                <div class="step-card form-step" id="step-1">
+                    <div class="section-heading">Resume Content</div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group"><span class="icon">👤</span><label>Full Name</label><input type="text" name="name" required placeholder="e.g., Jane Doe"></div>
+                            <div class="form-group"><span class="icon">📧</span><label>Email</label><input type="email" name="email" required placeholder="e.g., jane@email.com"></div>
+                            <div class="form-group"><span class="icon">📱</span><label>Phone</label><input type="text" name="phone" required placeholder="e.g., +1 234 567 8901"></div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group"><span class="icon">🎯</span><label>Profile Summary</label><textarea name="summary" rows="3" maxlength="300" placeholder="e.g., Passionate developer with..." oninput="document.getElementById('summary-count').textContent=this.value.length+'/300';"></textarea><span class="char-count" id="summary-count">0/300</span></div>
+                        </div>
+                    </div>
+                    <div class="success-feedback" id="feedback-1" style="display:none;">Looks good! 🎉</div>
+                    <button type="button" class="btn next-btn" id="to-step-2">Next: Education</button>
+                </div>
+                <!-- Step 2: Education -->
+                <div class="step-card form-step" id="step-2" style="display:none;">
+                    <div class="section-heading">Education</div>
+                    <div id="education-list"></div>
+                    <button type="button" class="add-btn" id="add-education">+ Add Education</button>
+                    <div class="success-feedback" id="feedback-2" style="display:none;">Great! Now add your experience.</div>
+                    <div style="display:flex;gap:1em;margin-top:1.5em;">
+                        <button type="button" class="btn" id="back-to-1">Back</button>
+                        <button type="button" class="btn next-btn" id="to-step-3">Next: Experience & Projects</button>
+                    </div>
+                </div>
+                <!-- Step 3: Experience & Projects -->
+                <div class="step-card form-step" id="step-3" style="display:none;">
+                    <div class="section-heading">Experience & Projects</div>
+                    <div class="form-group"><span class="icon">💼</span><label>Work Experience</label></div>
+                    <div id="experience-list"></div>
+                    <button type="button" class="add-btn" id="add-experience">+ Add Experience</button>
+                    <div class="form-group" style="margin-top:2em;"><span class="icon">💡</span><label>Projects</label></div>
+                    <div id="project-list"></div>
+                    <button type="button" class="add-btn" id="add-project">+ Add Project</button>
+                    <div class="success-feedback" id="feedback-3" style="display:none;">Almost done! Add your skills and finish up.</div>
+                    <div style="display:flex;gap:1em;margin-top:1.5em;">
+                        <button type="button" class="btn" id="back-to-2">Back</button>
+                        <button type="button" class="btn next-btn" id="to-step-4">Next: Skills & Download</button>
+                    </div>
+                </div>
+                <!-- Step 4: Skills, Certifications, Download -->
+                <div class="step-card form-step" id="step-4" style="display:none;">
+                    <div class="section-heading">Skills & More</div>
+                    <div class="form-group"><span class="icon">🛠️</span><label>Skills</label></div>
+                    <div class="tag-input" id="skills-input"></div>
+                    <input type="text" id="skill-suggest" placeholder="Type a skill and press Enter" autocomplete="off" style="margin-bottom:1em;">
+                    <div class="form-group"><span class="icon">📜</span><label>Certifications</label><input type="text" name="certifications" placeholder="e.g., AWS Certified, PMP"></div>
+                    <div class="form-group"><span class="icon">🌐</span><label>Languages</label><input type="text" name="languages" placeholder="e.g., English, Hindi, French"></div>
+                    <div class="form-group"><span class="icon">🏆</span><label>Achievements</label><input type="text" name="achievements" placeholder="e.g., Hackathon Winner"></div>
+                    <div class="form-group"><span class="icon">🎨</span><label>Choose Template</label></div>
+                    <div class="template-list">
+                        <div class="template-thumb selected" data-template="modern">Modern</div>
+                        <div class="template-thumb" data-template="classic">Classic</div>
+                        <div class="template-thumb" data-template="minimal">Minimal</div>
+                    </div>
+                    <div class="success-feedback" id="feedback-4" style="display:none;">Ready! Preview and download your resume.</div>
+                    <div style="display:flex;gap:1em;margin-top:1.5em;">
+                        <button type="button" class="btn" id="back-to-3">Back</button>
+                        <button type="button" class="btn" id="download-pdf">Download as PDF</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="preview-section" id="preview-section" style="flex:1 1 420px;min-width:320px;max-width:600px;margin-top:0;">
+            <h3 style="color:#7B61FF;font-size:1.3em;margin-top:0;font-family:'Poppins',Arial,sans-serif;">Live Preview</h3>
+            <div id="resume-preview" style="min-height:200px;"></div>
+            <!-- Simplified PDF preview for export only -->
+            <div id="resume-preview-pdf" style="display:none;"></div>
+        </div>
+    </div>
+    <script src="/static/js/resume_builder.js"></script>
+    <script>
+        // Always start with a fresh form, but keep previous details in localStorage for restore
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clear all form fields for a fresh start
+            var form = document.getElementById('resume-form');
+            if (form) {
+                Array.from(form.elements).forEach(function(el) {
+                    if (el.type === 'text' || el.type === 'email' || el.tagName === 'TEXTAREA') {
+                        el.value = '';
+                    }
+                });
+            }
+            // Show preview fallback if empty
+            var preview = document.getElementById('resume-preview');
+            if (preview && preview.innerHTML.trim() === '') {
+                preview.innerHTML = '<div style="color:#aaa;text-align:center;padding:2em 0;">Your resume preview will appear here as you fill the form.</div>';
+            }
+        });
+    </script>
+</body>
+</html>

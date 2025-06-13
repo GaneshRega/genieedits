@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-title-section">
+    <div class="main-title">Portfolio Website Generator</div>
+    <div class="main-subtext">Create a modern, responsive portfolio from your resume details in seconds.</div>
+</div>
+<div class="portfolio-form-wrapper">
+  <form method="POST" enctype="multipart/form-data" class="portfolio-form">
+    <!-- Basic Info -->
+    <div class="form-section-card">
+      <div class="form-section-title">Basic Info</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" placeholder="e.g. John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Professional Title</label>
+          <input type="text" name="title" placeholder="e.g. Web Developer" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Birthday</label>
+          <input type="text" name="birthday" placeholder="e.g. 2 March, 2003">
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" name="location" placeholder="e.g. Pune, India">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="e.g. you@email.com">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" name="phone" placeholder="e.g. +91 1234567890">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><span class="iconify" data-icon="mdi:facebook"></span> Facebook</label>
+          <input type="text" name="facebook" placeholder="Facebook profile link">
+        </div>
+        <div class="form-group">
+          <label><span class="iconify" data-icon="mdi:twitter"></span> Twitter</label>
+          <input type="text" name="twitter" placeholder="Twitter profile link">
+        </div>
+        <div class="form-group">
+          <label><span class="iconify" data-icon="mdi:instagram"></span> Instagram</label>
+          <input type="text" name="instagram" placeholder="Instagram profile link">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:2;">
+          <label>Map Location (Google Maps Embed Link)</label>
+          <input type="text" name="map" placeholder="Paste Google Maps embed link">
+        </div>
+      </div>
+    </div>
+    <!-- About -->
+    <div class="form-section-card">
+      <div class="form-section-title">About</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>About Paragraph 1</label>
+          <textarea name="about1" rows="2" placeholder="Short intro about yourself"></textarea>
+        </div>
+        <div class="form-group">
+          <label>About Paragraph 2</label>
+          <textarea name="about2" rows="2" placeholder="What makes you unique, your approach, etc."></textarea>
+        </div>
+      </div>
+    </div>
+    <!-- Services -->
+    <div class="form-section-card">
+      <div class="form-section-title">Services (max 4)</div>
+      <div class="form-row">
+        {% for i in range(1,5) %}
+        <div class="form-group">
+          <label>Service {{i}} Title</label>
+          <input type="text" name="service{{i}}_title" placeholder="e.g. Web Design">
+          <label>Service {{i}} Description</label>
+          <input type="text" name="service{{i}}_desc" placeholder="e.g. Modern and high-quality design">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <!-- Skills -->
+    <div class="form-section-card">
+      <div class="form-section-title">Skills (max 4)</div>
+      <div class="form-row">
+        {% for i in range(1,5) %}
+        <div class="form-group">
+          <label>Skill {{i}} Name</label>
+          <input type="text" name="skill{{i}}_name" placeholder="e.g. Web Design">
+          <label>Skill {{i}} Percent</label>
+          <input type="range" name="skill{{i}}_percent" min="0" max="100" value="80" oninput="this.nextElementSibling.value = this.value + '%'">
+          <output style="margin-left:8px;">80%</output>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <!-- Resume: Education & Experience -->
+    <div class="form-section-card">
+      <div class="form-section-title">Education (max 3)</div>
+      <div class="form-row">
+        {% for i in range(1,4) %}
+        <div class="form-group">
+          <label>School</label>
+          <input type="text" name="edu{{i}}_school" placeholder="e.g. University Name">
+          <label>Years</label>
+          <input type="text" name="edu{{i}}_years" placeholder="e.g. 2021 — 2024">
+          <label>Description</label>
+          <input type="text" name="edu{{i}}_desc" placeholder="e.g. Degree, achievements, etc.">
+        </div>
+        {% endfor %}
+      </div>
+      <div class="form-section-title">Experience (max 3)</div>
+      <div class="form-row">
+        {% for i in range(1,4) %}
+        <div class="form-group">
+          <label>Role</label>
+          <input type="text" name="exp{{i}}_role" placeholder="e.g. Creative Director">
+          <label>Years</label>
+          <input type="text" name="exp{{i}}_years" placeholder="e.g. 2015 — Present">
+          <label>Description</label>
+          <input type="text" name="exp{{i}}_desc" placeholder="e.g. Responsibilities, achievements, etc.">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <!-- Portfolio Projects -->
+    <div class="form-section-card">
+      <div class="form-section-title">Portfolio Projects (max 9)</div>
+      <div class="form-row">
+        {% for i in range(1,10) %}
+        <div class="form-group">
+          <label>Project {{i}} Title</label>
+          <input type="text" name="project{{i}}_title" placeholder="e.g. Finance">
+          <label>Category</label>
+          <input type="text" name="project{{i}}_cat" placeholder="e.g. Web Development">
+          <label>Link</label>
+          <input type="text" name="project{{i}}_link" placeholder="e.g. https://project.com">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <!-- Testimonials & Clients (collapsible) -->
+    <div class="form-section-card collapsible">
+      <div class="form-section-title" onclick="this.parentElement.classList.toggle('open')" style="cursor:pointer;">Testimonials & Clients <span style="font-size:0.9em;color:#888;">(Click to expand)</span></div>
+      <div class="collapsible-content">
+        <div class="form-row">
+          {% for i in range(1,5) %}
+          <div class="form-group">
+            <label>Testimonial {{i}} Name</label>
+            <input type="text" name="testimonial{{i}}_name" placeholder="e.g. Priya S.">
+            <label>Testimonial {{i}} Text</label>
+            <textarea name="testimonial{{i}}_text" rows="2" placeholder="e.g. 'Great to work with!'" ></textarea>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="form-row">
+          {% for i in range(1,7) %}
+          <div class="form-group">
+            <label>Client {{i}} Link</label>
+            <input type="text" name="client{{i}}_link" placeholder="e.g. https://client.com">
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <!-- Blog (collapsible) -->
+    <div class="form-section-card collapsible">
+      <div class="form-section-title" onclick="this.parentElement.classList.toggle('open')" style="cursor:pointer;">Blog Posts <span style="font-size:0.9em;color:#888;">(Click to expand)</span></div>
+      <div class="collapsible-content">
+        <div class="form-row">
+          {% for i in range(1,7) %}
+          <div class="form-group">
+            <label>Blog {{i}} Title</label>
+            <input type="text" name="blog{{i}}_title" placeholder="e.g. Design conferences in 2022">
+            <label>Category</label>
+            <input type="text" name="blog{{i}}_cat" placeholder="e.g. Design">
+            <label>Date</label>
+            <input type="text" name="blog{{i}}_date" placeholder="e.g. Feb 23, 2022">
+            <label>Summary</label>
+            <textarea name="blog{{i}}_summary" rows="2" placeholder="Short summary"></textarea>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="btn-accent" style="margin-top:1.2em;">Generate Portfolio</button>
+  </form>
+</div>
+<style>
+  .portfolio-form-wrapper { max-width: 1100px; margin: 2.5em auto; }
+  .portfolio-form { display: flex; flex-direction: column; gap: 2em; }
+  .form-section-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2em 2em 1.5em 2em; margin-bottom: 1.5em; }
+  .form-section-title { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 1.2em; letter-spacing: 1px; }
+  .form-row { display: flex; flex-wrap: wrap; gap: 2em; }
+  .form-group { flex: 1 1 220px; display: flex; flex-direction: column; gap: 0.5em; min-width: 220px; max-width: 340px; }
+  .form-group input[type="text"], .form-group input[type="email"], .form-group textarea, .form-group input[type="number"] { padding: 0.7em 1em; border-radius: 8px; border: 1.5px solid #D4B2FF; font-size: 1.05em; font-family: 'Inter', 'Poppins', Arial, sans-serif; }
+  .form-group textarea { resize: vertical; min-height: 38px; }
+  .form-group input[type="range"] { width: 100%; margin-top: 0.2em; }
+  .form-group label { font-weight: 600; color: var(--primary); font-size: 1.01em; }
+  .collapsible .collapsible-content { display: none; }
+  .collapsible.open .collapsible-content { display: block; }
+  @media (max-width: 900px) {
+    .form-row { flex-direction: column; gap: 1em; }
+    .form-group { max-width: 100%; }
+    .portfolio-form-wrapper { padding: 0 0.5em; }
+  }
+</style>
+<script>
+  // Expand/collapse for advanced sections
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.form-section-card.collapsible .form-section-title').forEach(function(title) {
+      title.addEventListener('click', function() {
+        this.parentElement.classList.toggle('open');
+      });
+    });
+  });
+</script>
+{% endblock %}

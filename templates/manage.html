@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie Edits - Manage Images</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #b000f0;
+            --primary-hover: #d400d4;
+            --bg: #ffffff;
+            --card-bg: #f3f3f3;
+            --text-main: #000000;
+            --text-sub: #666666;
+            --shadow: 0 4px 24px rgba(176,0,240,0.08);
+            --radius: 18px;
+        }
+        html, body {
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: var(--text-main);
+        }
+        .navbar {
+            background: var(--bg);
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            padding: 0.7rem 0;
+        }
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: var(--primary);
+            font-family: 'Poppins', 'Inter', Arial, sans-serif;
+        }
+        .logo img {
+            height: 44px;
+            margin-right: 12px;
+            border-radius: 10px;
+        }
+        .navbar-search {
+            flex-grow: 1;
+            margin: 0 2rem;
+        }
+        .tool-search-bar-container {
+            position: relative;
+        }
+        #tool-search-bar {
+            width: 100%;
+            padding: 0.7em 1.2em;
+            border: 1px solid #ddd;
+            border-radius: 999px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #tool-search-bar:focus {
+            border-color: var(--primary);
+        }
+        .tool-search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .tool-search-suggestions li {
+            padding: 0.8em 1.2em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .tool-search-suggestions li:hover {
+            background: #f5f5f5;
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .container-main {
+            max-width: 800px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            padding: 36px 32px 32px 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 0.5em;
+            text-align: center;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+        form {
+            margin-bottom: 1.5em;
+        }
+        .img-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            justify-content: center;
+        }
+        .img-item {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #b000f022;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 140px;
+        }
+        .img-item img {
+            max-width: 120px;
+            max-height: 80px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        .img-item label {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .img-item input[type=checkbox] {
+            margin-bottom: 8px;
+        }
+        .delete-btn {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 0 auto;
+            display: block;
+        }
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+        .download-btn {
+            margin-top: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+            background: var(--primary);
+            color: #fff;
+            padding: 0.7em 1.3em;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            box-shadow: 0 2px 8px #b000f022;
+            transition: background 0.18s;
+        }
+        .download-btn:hover {
+            background: var(--primary-hover);
+            color: #fff;
+        }
+        .download-btn .iconify {
+            font-size: 1.3em;
+        }
+        .footer {
+            background: var(--bg);
+            color: var(--text-sub);
+            padding: 2em 0 1.2em 0;
+            text-align: center;
+            font-size: 1.01rem;
+            border-top: 1px solid #ececec;
+            margin-top: 3em;
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.5em;
+            transition: color 0.3s;
+        }
+        .footer a:hover {
+            color: var(--primary-hover);
+        }
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(270deg, #f3f4f6, #ffffff);
+            animation: bgAnimation 6s ease-in-out infinite;
+        }
+        @keyframes bgAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Start Creating button removed as requested -->
+            </div>
+        </div>
+    </nav>
+    <div class="container-main">
+        <h1>Manage Images</h1>
+        <form action="/manage" method="post">
+            <div class="img-list">
+                {% for img in images %}
+                <div class="img-item">
+                    <img src="{{ url_for('show_upload', filename=img) }}" alt="{{ img }}">
+                    <label>{{ img }}</label>
+                    <input type="checkbox" name="delete_imgs" value="{{ img }}">
+                </div>
+                {% endfor %}
+            </div>
+            <button class="delete-btn" type="submit">Delete Selected</button>
+        </form>
+    </div>
+    <div class="footer">
+        &copy; 2025 Genie Edits &mdash; Edit with AI. For Free. Forever. ✨
+    </div>
+</body>
+</html>

@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie Edits – Free AI Image Tools</title>
+    <!-- Google Fonts: Inter & Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png.png') }}">
+    <style>
+        :root {
+            --primary: #6A0DAD;
+            --primary-light: #6A0DAD;
+            --primary-dark: #4B0082;
+            --primary-hover: #6A0DAD;
+            --secondary: #00BFCF;
+            --highlight: #FFD700;
+            --success: #28A745;
+            --error: #DC3545;
+            --warning: #FF9800;
+            --bg: #FFFFFF;
+            --card-bg: #F4F4F4;
+            --border: #CCCCCC;
+            --text-main: #1E1E1E;
+            --text-sub: #666666;
+            --disabled: #AAAAAA;
+            --shadow: 0 4px 24px rgba(106,13,173,0.08);
+            --radius: 18px;
+        }
+        html, body {
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: var(--text-main);
+        }
+        /* Header */
+        .navbar {
+    background: var(--bg);
+    color: var(--text-main);
+    box-shadow: var(--shadow);
+    padding: 0.7rem 0;
+    position: fixed;   /* CHANGED from sticky to fixed */
+    top: 0;
+    width: 100%;       /* ADDED */
+    z-index: 1002;
+}
+        .navbar .container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            gap: 1.5rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: var(--primary);
+            font-family: 'Poppins', 'Inter', Arial, sans-serif;
+            margin-bottom: 0;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+        }
+        .logo img {
+            height: 64px;
+            width: 64px;
+            margin-right: 16px;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+        .navbar-search {
+            flex: 1 1 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            min-width: 220px;
+            max-width: 420px;
+        }
+        .tool-search-bar-container {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1003;
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: 1.5rem;
+            flex-shrink: 0;
+        }
+        @media (max-width: 600px) {
+            .navbar .container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+                padding: 0 0.5rem;
+            }
+            .logo {
+                font-size: 1.3rem;
+                margin-right: 0;
+                margin-bottom: 0.5em;
+                justify-content: center;
+            }
+            .navbar-search {
+                min-width: 0;
+                margin: 0 0 0.5em 0;
+            }
+            .nav-actions {
+                margin-left: 0;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+        }
+        /* Ensure search bar dropdown is always visually separated and readable */
+        .tool-search-suggestions {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            background: #fff;
+            backdrop-filter: blur(10px);
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 8px 32px #6A0DAD22, 0 2px 8px #6A0DAD11;
+            border: 1.5px solid #D4B2FF;
+            border-top: none;
+            z-index: 2000;
+            max-height: 220px;
+            overflow-y: auto;
+            display: none;
+        }
+        .tool-search-suggestions.active {
+            display: block;
+        }
+        .tool-search-suggestions li {
+            padding: 0.7em 1.2em;
+            font-size: 16px;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: #6A0DAD;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .tool-search-suggestions li.selected,
+        .tool-search-suggestions li:hover {
+            background: #f6f0ff;
+            color: #4B0082;
+        }
+        /* Main Title Section */
+        .main-title-section {
+    max-width: 700px;
+    margin: 7em auto 2.5em auto; /* INCREASED top margin for fixed navbar */
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+        .main-title {
+            font-size: 2.7rem;
+            font-weight: 900;
+            font-family: 'Poppins', 'Inter', Arial, sans-serif;
+            color: var(--text-main);
+            margin-bottom: 0.5em;
+            white-space: nowrap;
+        }
+        .main-subtext {
+            font-size: 1.25rem;
+            color: var(--text-sub);
+            font-weight: 500;
+            margin-bottom: 1.7em;
+        }
+        /* Upload + Visual Demo Row */
+        .upload-demo-row {
+            display: flex;
+            flex-direction: row-reverse; /* upload box right, images left */
+            justify-content: center;
+            align-items: center;
+            gap: 3em;
+            max-width: 1100px;
+            margin: 0 auto 2.5em auto;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 900px) {
+            .upload-demo-row {
+                flex-direction: column-reverse !important;
+            }
+        }
+        /* Visual Demo Area */
+        .visual-demo-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2.5em;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 0;
+            margin-bottom: 2.5em;
+            max-width: 600px;
+            width: 100%;
+        }
+        .demo-thumb {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 180px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .demo-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius);
+        }
+        .demo-label {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            background: rgba(255,255,255,0.85);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.05rem;
+            border-radius: 0 0 var(--radius) var(--radius);
+            padding: 0.3em 0;
+        }
+        /* Upload Area */
+        .upload-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2.2em 2em 2em 2em;
+            margin: 2.5em auto 2em auto;
+            min-width: 340px;
+            max-width: 420px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .upload-label {
+            font-weight: 600;
+            font-size: 1.08rem;
+            color: var(--text-main);
+            margin-bottom: 1.2em;
+        }
+        .upload-drop {
+            border: 2.5px dashed var(--primary);
+            border-radius: var(--radius);
+            background: #fff;
+            width: 100%;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-bottom: 1.2em;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .upload-drop.dragover {
+            border-color: var(--primary-hover);
+            background: #faf0fd;
+        }
+        .upload-icon {
+            font-size: 2.3rem;
+            color: var(--primary);
+            margin-bottom: 0.5em;
+        }
+        .upload-cta {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 0.9em 2.2em;
+            font-weight: 700;
+            font-size: 1.13rem;
+            font-family: 'Poppins', Arial, sans-serif;
+            cursor: pointer;
+            margin-bottom: 0.7em;
+            transition: background 0.2s;
+        }
+        .upload-cta:hover {
+            background: var(--primary-hover);
+        }
+        .upload-or {
+            color: var(--text-sub);
+            font-size: 1.01rem;
+            margin-bottom: 0.7em;
+        }
+        .upload-section input[type="file"] {
+            display: none;
+        }
+        /* Feature Cards */
+        .live-preview-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 1.5em;
+            margin: 2.5em auto 2.5em auto;
+            max-width: 1100px;
+            padding: 0 1.5rem;
+        }
+        .preview-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5em 1em;
+            text-align: center;
+            box-shadow: var(--shadow);
+            flex: 1 1 200px;
+            min-width: 170px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .preview-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .preview-card .iconify {
+            font-size: 2.3rem;
+            margin-bottom: 0.7em;
+            color: var(--primary);
+        }
+        .preview-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5em;
+            color: var(--text-main);
+        }
+        .preview-desc {
+            font-size: 0.97rem;
+            color: var(--text-sub);
+        }
+        /* Testimonial Section */
+        .testimonial-section {
+            max-width: 1100px;
+            margin: 3em auto 2em auto;
+            padding: 0 1.5rem;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .testimonial-section h2 {
+            text-align: center;
+            color: var(--primary);
+            font-family: 'Poppins', Arial, sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.2em;
+        }
+        .testimonial-row {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 2em;
+            justify-content: flex-start;
+            align-items: stretch;
+            overflow-x: auto;
+            padding-bottom: 1em;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #eee;
+        }
+        .testimonial-row::-webkit-scrollbar {
+            height: 8px;
+        }
+        .testimonial-row::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 8px;
+        }
+        .testimonial-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2em 1.5em;
+            min-width: 260px;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 0 0 260px;
+        }
+        .testimonial-card img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin-bottom: 1em;
+            object-fit: cover;
+        }
+        @media (max-width: 700px) {
+            .testimonial-section { padding: 0 0.2rem; }
+            .testimonial-row { gap: 1em; }
+            .testimonial-card { min-width: 220px; flex: 0 0 220px; }
+        }
+        /* Footer */
+        .footer {
+            background: var(--bg);
+            color: var(--text-sub);
+            padding: 2em 0 1.2em 0;
+            text-align: center;
+            font-size: 1.01rem;
+            border-top: 1px solid #ececec;
+            margin-top: 3em;
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.5em;
+            transition: color 0.3s;
+        }
+        .footer a:hover {
+            color: var(--primary-hover);
+        }
+        /* Animated background gradient */
+        .animated-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8faff 0%, #f3e7ff 40%, #e0f7fa 80%, #e0e7ff 100%);
+            background-size: 400% 400%;
+            animation: bgMove 16s ease-in-out infinite;
+        }
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 100%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 0%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* Improved loading spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(106,13,173,0.10);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #6A0DAD;
+            border-right: 8px solid #6A0DAD;
+            border-bottom: 8px solid #6A0DAD;
+            border-left: 8px solid #e0f7fa;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 0.8s linear infinite;
+            background: transparent;
+        }
+        .loading-text {
+            margin-top: 18px;
+            color: #6A0DAD;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        body > .animated-bg { position: fixed; z-index: 0; }
+        body > *:not(.animated-bg) { position: relative; z-index: 1; }
+        @media (max-width: 900px) {
+            .visual-demo-area { flex-direction: column; align-items: center; gap: 1.5em; }
+            .live-preview-section { flex-direction: column; align-items: center; gap: 1.5em; }
+        }
+        /* Modern Tool Search Bar */
+        .tool-search-bar-wrapper {
+          display: flex;
+          justify-content: center;
+          margin: 1.5em 0 1.5em 0;
+          width: 100%;
+        }
+        .tool-search-bar-container {
+          width: 100%;
+          max-width: 400px;
+          position: relative;
+          z-index: 1003;
+        }
+        #tool-search-bar {
+          width: 100%;
+          height: 42px;
+          border-radius: 12px;
+          border: 1.5px solid #D4B2FF;
+          background: #fff;
+          font-family: 'Inter', 'Poppins', Arial, sans-serif;
+          font-size: 16px;
+          font-weight: 500;
+          color: #222;
+          padding: 0 1.2em;
+          box-shadow: 0 2px 8px #6A0DAD11, inset 0 1.5px 6px #e9e1f7;
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #tool-search-bar:focus {
+          border-color: #8F42FF;
+          box-shadow: 0 2px 12px #8F42FF22, 0 2px 8px #6A0DAD11, inset 0 1.5px 6px #e9e1f7;
+        }
+        #tool-search-bar::placeholder {
+          color: #999999;
+          font-weight: 500;
+          opacity: 1;
+        }
+        .tool-search-suggestions {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          position: absolute;
+          top: 44px;
+          left: 0;
+          right: 0;
+          background: #fff; /* solid white for clarity */
+          backdrop-filter: blur(10px); /* subtle blur for modern look */
+          border-radius: 0 0 16px 16px; /* slightly more rounded */
+          box-shadow: 0 8px 32px #6A0DAD22, 0 2px 8px #6A0DAD11;
+          border: 1.5px solid #D4B2FF;
+          border-top: none;
+          z-index: 2000;
+          max-height: 220px;
+          overflow-y: auto;
+          display: none;
+        }
+        .tool-search-suggestions.active {
+          display: block;
+        }
+        .tool-search-suggestions li {
+          padding: 0.7em 1.2em;
+          font-size: 16px;
+          font-family: 'Inter', 'Poppins', Arial, sans-serif;
+          color: #6A0DAD;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+        .tool-search-suggestions li.selected,
+        .tool-search-suggestions li:hover {
+          background: #f6f0ff;
+          color: #4B0082;
+        }
+        .btn-accent {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 0.9em 2.2em;
+            font-weight: 700;
+            font-size: 1.13rem;
+            font-family: 'Poppins', Arial, sans-serif;
+            cursor: pointer;
+            margin-bottom: 0.7em;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px #6A0DAD11;
+        }
+        .btn-accent:hover, .btn-accent:focus {
+            background: var(--primary-hover);
+            color: #fff;
+        }
+        /* Custom Feature Cards Layout */
+.custom-feature-section { background: linear-gradient(135deg, #f8f1ff 0%, #ece1ff 100%); border-radius: 24px; box-shadow: 0 4px 32px #b000f011; }
+.custom-feature-row { display: flex; gap: 2.5em; justify-content: center; flex-wrap: wrap; }
+.custom-card { background: #fff; border-radius: 22px; box-shadow: 0 2px 16px #b000f022; padding: 2.2em 1.5em 2.5em 1.5em; min-width: 270px; max-width: 340px; flex: 1 1 300px; display: flex; flex-direction: column; align-items: center; transition: transform 0.22s cubic-bezier(.4,1.6,.6,1), box-shadow 0.22s; position: relative; margin-bottom: 2em; }
+.custom-card:hover { transform: translateY(-10px) scale(1.035); box-shadow: 0 8px 32px #b000f044, 0 2px 8px #b000f022; z-index: 2; }
+.custom-card-icon { font-size: 2.7rem; color: #8F42FF; margin-bottom: 0.7em; }
+.custom-card-title { font-size: 1.25rem; font-weight: 700; color: #6A0DAD; margin-bottom: 0.4em; text-align: center; }
+.custom-card-sub { font-size: 1.01rem; color: #6A0DADcc; margin-bottom: 1.2em; text-align: center; }
+.glow-upload-btn { display: inline-block; border-radius: 999px; background: linear-gradient(90deg, #b47cff 0%, #8F42FF 100%); box-shadow: 0 0 16px #b47cff66, 0 2px 8px #b47cff22; padding: 0.7em 2.1em; color: #fff; font-weight: 700; font-size: 1.08rem; cursor: pointer; margin-bottom: 1.2em; position: relative; transition: box-shadow 0.18s, background 0.18s; }
+.glow-upload-btn:hover { box-shadow: 0 0 32px #b47cff99, 0 2px 8px #b47cff22; background: linear-gradient(90deg, #8F42FF 0%, #b47cff 100%); }
+.bg-preview-section { width: 100%; margin-top: 1.2em; }
+.bg-preview-imgs { display: flex; gap: 1.2em; justify-content: center; align-items: flex-start; }
+.bg-preview-img { display: flex; flex-direction: column; align-items: center; }
+.bg-preview-img img { width: 120px; height: 120px; object-fit: cover; border-radius: 16px; box-shadow: 0 2px 8px #b47cff22; margin-bottom: 0.5em; }
+.bg-preview-label { font-size: 1em; color: #8F42FF; font-weight: 600; }
+/* Object Eraser Card */
+.obj-preview-section { width: 100%; margin-top: 1.2em; display: flex; justify-content: center; }
+.obj-preview-img-wrapper { position: relative; display: inline-block; }
+.obj-demo-img { width: 180px; height: 120px; object-fit: cover; border-radius: 16px; box-shadow: 0 2px 8px #b47cff22; transition: filter 0.22s; }
+.obj-demo-img:hover { filter: blur(2.5px) brightness(1.08); }
+.fake-brush-cursor { position: absolute; top: 40px; left: 40px; width: 32px; height: 32px; border-radius: 50%; border: 3px solid #00BFCF; background: rgba(0,191,207,0.13); pointer-events: none; animation: brush-move 2.2s infinite alternate cubic-bezier(.4,1.6,.6,1); box-shadow: 0 0 12px #00BFCF44; }
+@keyframes brush-move { 0% { top: 40px; left: 40px; opacity: 0.7; } 30% { top: 60px; left: 80px; opacity: 1; } 60% { top: 80px; left: 120px; opacity: 0.8; } 100% { top: 40px; left: 40px; opacity: 0.7; } }
+/* Background Replacement Card */
+.bg-replace-btn-row { display: flex; gap: 1em; justify-content: center; margin-bottom: 1.2em; }
+.bg-replace-btn { background: linear-gradient(90deg, #b47cff 0%, #8F42FF 100%); color: #fff; border: none; border-radius: 999px; padding: 0.6em 1.5em; font-weight: 700; font-size: 1.01rem; cursor: pointer; box-shadow: 0 2px 8px #b47cff22; transition: background 0.18s, box-shadow 0.18s; }
+.bg-replace-btn:hover { background: linear-gradient(90deg, #8F42FF 0%, #b47cff 100%); box-shadow: 0 0 16px #b47cff66; }
+.bg-replace-preview-section { width: 100%; display: flex; justify-content: center; }
+.bg-replace-preview-box { background: #f8f1ff; border-radius: 16px; box-shadow: 0 2px 8px #b47cff22; padding: 1.2em; min-width: 140px; min-height: 120px; display: flex; align-items: center; justify-content: center; transition: box-shadow 0.22s, background 0.22s; }
+.bg-replace-preview-box img { width: 120px; height: 120px; object-fit: cover; border-radius: 12px; transition: opacity 0.4s, transform 0.4s; }
+.fade-in { animation: fadeIn 0.5s; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@media (max-width: 900px) { .custom-feature-row { flex-direction: column; align-items: center; gap: 1.5em; } .custom-card { max-width: 95vw; min-width: 220px; } }
+    </style>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <!-- Global Loading Overlay -->
+    <div id="global-loading-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(106,13,173,0.10);z-index:99999;align-items:center;justify-content:center;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="spinner"></div>
+            <div class="loading-text">Processing, please wait...</div>
+        </div>
+    </div>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Start Creating button removed as requested -->
+            </div>
+        </div>
+    </nav>
+    <!-- Main Title Section -->
+    <div class="main-title-section">
+        <div class="main-title" style="white-space:nowrap;">Genie Edits – Free AI Image Tools</div>
+        <div class="main-subtext">Remove backgrounds, enhance photos, and more – all in one click.</div>
+    </div>
+    <!-- Upload + Visual Demo Row -->
+    <div class="upload-demo-row">
+        <div class="visual-demo-area">
+            <div class="demo-thumb">
+                <img src="{{ url_for('static', filename='demo_before.png') }}" alt="Before">
+                <div class="demo-label">Before</div>
+            </div>
+            <div class="demo-thumb">
+                <img src="{{ url_for('static', filename='demo_after.png') }}" alt="After">
+                <div class="demo-label">After</div>
+            </div>
+            <div class="demo-thumb">
+                <img src="{{ url_for('static', filename='demo_enhanced.png') }}" alt="Enhanced">
+                <div class="demo-label">Enhanced</div>
+            </div>
+        </div>
+    </div>
+    <!-- Feature Cards -->
+    <div id="live" class="live-preview-section">
+        <div class="preview-card" onclick="window.location.href='/bg_remover'">
+            <span class="iconify" data-icon="mdi:scissors-cutting"></span>
+            <div class="preview-title">Background Remover</div>
+            <div class="preview-desc">Erase backgrounds in one click.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/upscale'">
+            <span class="iconify" data-icon="mdi:image-size-select-large"></span>
+            <div class="preview-title">Image Upscaler</div>
+            <div class="preview-desc">Make it HD & sharper.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/ai_auto_enhance'">
+            <span class="iconify" data-icon="mdi:magic-wand"></span>
+            <div class="preview-title">AI Auto Enhance</div>
+            <div class="preview-desc">Automatically fix brightness, contrast, and more with AI.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/ai_background_replacement'">
+            <span class="iconify" data-icon="mdi:image-filter-center-focus-strong"></span>
+            <div class="preview-title">AI Background Replacement</div>
+            <div class="preview-desc">Swap backgrounds with solid colors, templates, or your own image.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/ai_profile_picture_maker'">
+            <span class="iconify" data-icon="mdi:account-circle"></span>
+            <div class="preview-title">AI Profile Picture Maker</div>
+            <div class="preview-desc">Resize and export your image for social media profiles.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/edit'">
+            <span class="iconify" data-icon="mdi:image-edit"></span>
+            <div class="preview-title">Edit</div>
+            <div class="preview-desc">Flip, rotate, brighten, or add text to image.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/smart_resize'">
+            <span class="iconify" data-icon="mdi:aspect-ratio"></span>
+            <div class="preview-title">Smart Resize</div>
+            <div class="preview-desc">Fit every platform perfectly. Instantly resize for Instagram, LinkedIn, YouTube, and more.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/slide_creator'">
+            <span class="iconify" data-icon="mdi:monitor-dashboard"></span>
+            <div class="preview-title">Slide Creator <span style='font-size:0.9em;color:var(--primary-light);'>(beta)</span></div>
+            <div class="preview-desc">Turn your image into a stunning slide. Adds headings, backgrounds, and smart alignment.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/resume_shot'">
+            <span class="iconify" data-icon="mdi:account-badge"></span>
+            <div class="preview-title">Resume Shot</div>
+            <div class="preview-desc">Your professional photo in seconds. Crops, enhances, and centers face for resumes.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/color_corrector'">
+            <span class="iconify" data-icon="mdi:palette"></span>
+            <div class="preview-title">Color Corrector</div>
+            <div class="preview-desc">Adjusts white balance and brightness for scanned assignments, notes, and ID cards.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/sketch_enhancer'">
+            <span class="iconify" data-icon="mdi:pencil"></span>
+            <div class="preview-title">Pencil Sketch Creator</div>
+            <div class="preview-desc">Turn any photo into a natural, hand-drawn pencil sketch. Looks like real art!</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/note_cleaner'">
+            <span class="iconify" data-icon="mdi:note-text"></span>
+            <div class="preview-title">Note Cleaner</div>
+            <div class="preview-desc">Turn paper notes into crisp scans. Cleans creases, shadows, and sharpens text.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/transparent_icon'">
+            <span class="iconify" data-icon="mdi:alpha-t-box-outline"></span>
+            <div class="preview-title">Image to Transparent Icon</div>
+            <div class="preview-desc">Convert logos, drawings, or objects into transparent PNGs for projects and branding.</div>
+        </div>
+        <!-- Smart Resume Generator / Editor Card -->
+        <div class="preview-card" onclick="window.location.href='/resume-builder'">
+            <span class="iconify" data-icon="mdi:file-account-outline"></span>
+            <div class="preview-title">Smart Resume Generator / Editor</div>
+            <div class="preview-desc">Auto-fill resume with templates. Import from LinkedIn or PDF. Add skills, projects, certifications easily. Download as PDF.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/portfolio-generator'">
+            <span class="iconify" data-icon="mdi:web"></span>
+            <div class="preview-title">Portfolio Website Generator</div>
+            <div class="preview-desc">Create a modern, responsive one-page portfolio from your resume details. Export or share instantly.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/qr_generator'">
+    <span class="iconify" data-icon="mdi:qrcode-scan"></span>
+    <div class="preview-title">QR Code Generator</div>
+    <div class="preview-desc">Create a QR code for any text or link. Download as PNG.</div>
+</div>
+        <div class="preview-card" onclick="window.location.href='/portrait_sketch'">
+            <span class="iconify" data-icon="mdi:face-woman-profile"></span>
+            <div class="preview-title">Portrait Sketch</div>
+            <div class="preview-desc">Generate an AI portrait or turn your photo into a sketch or cartoon.</div>
+        </div>
+        <div class="preview-card" onclick="window.location.href='/bg_remover'">
+    <span class="iconify" data-icon="mdi:image-remove-outline"></span>
+    <div class="preview-title">Background Remover</div>
+    <div class="preview-desc">Remove the background from any image with AI.</div>
+</div>
+<div class="preview-card" onclick="window.location.href='/batch_bg_remover'">
+    <span class="iconify" data-icon="mdi:folder-multiple-image"></span>
+    <div class="preview-title">Batch Background Remover</div>
+    <div class="preview-desc">Remove backgrounds from multiple images at once and download as ZIP.</div>
+</div>
+<div class="preview-card" onclick="window.location.href='/crop_resize'">
+    <span class="iconify" data-icon="mdi:crop"></span>
+    <div class="preview-title">Crop & Resize</div>
+    <div class="preview-desc">Crop and resize your images easily before or after editing.</div>
+</div>
+<div class="preview-card" onclick="window.location.href='/object_eraser'">
+    <span class="iconify" data-icon="mdi:eraser"></span>
+    <div class="preview-title">AI Object Eraser</div>
+    <div class="preview-desc">Erase unwanted objects from your images using AI inpainting.</div>
+</div>
+<div class="preview-card" onclick="window.location.href='/qr_generator'">
+    <span class="iconify" data-icon="mdi:qrcode-scan"></span>
+    <div class="preview-title">QR Code Generator</div>
+    <div class="preview-desc">Create a QR code for any text or link. Customize color and add a center icon.</div>
+</div>
+<div class="preview-card" onclick="window.location.href='/convert'">
+    <span class="iconify" data-icon="mdi:file-compare"></span>
+    <div class="preview-title">Image Format Converter</div>
+    <div class="preview-desc">Convert images between PNG, JPG, WebP, and more.</div>
+</div>
+<div class="preview-card" onclick="window.location.href='/compress'">
+    <span class="iconify" data-icon="mdi:compress"></span>
+    <div class="preview-title">Image Compressor</div>
+    <div class="preview-desc">Compress images for web use with a quality slider and preview.</div>
+</div>
+<div class="preview-card" onclick="window.location.href='/watermark'">
+    <span class="iconify" data-icon="mdi:watermark"></span>
+    <div class="preview-title">Add Watermark</div>
+    <div class="preview-desc">Add a custom text watermark to your images.</div>
+</div>
+    </div>
+    <!-- Format Generator Section -->
+    <div id="format-generator-section" style="max-width:1100px;margin:3em auto 2em auto;padding:0 1.5rem;background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);">
+        <h2 style="text-align:center;color:var(--primary);font-family:'Poppins',Arial,sans-serif;font-size:2rem;font-weight:800;margin-bottom:1.2em;">AI Format Generator</h2>
+        <!-- Step 1: Format Type Selection -->
+        <div id="format-type-cards" class="live-preview-section" style="margin-bottom:2em;">
+            <div class="preview-card format-card" data-type="leave" title="Leave Request">
+                <span style="font-size:2.3rem;">📅</span>
+                <div class="preview-title">Leave Request</div>
+                <div class="preview-desc">Request time off from work</div>
+            </div>
+            <div class="preview-card format-card" data-type="work_update" title="Daily Work Update">
+                <span style="font-size:2.3rem;">📋</span>
+                <div class="preview-title">Daily Work Update</div>
+                <div class="preview-desc">Summarize your daily tasks</div>
+            </div>
+            <div class="preview-card format-card" data-type="meeting_summary" title="Meeting Summary">
+                <span style="font-size:2.3rem;">📝</span>
+                <div class="preview-title">Meeting Summary</div>
+                <div class="preview-desc">Summarize meeting points</div>
+            </div>
+            <div class="preview-card format-card" data-type="task_assignment" title="Task Assignment">
+                <span style="font-size:2.3rem;">📝</span>
+                <div class="preview-title">Task Assignment</div>
+                <div class="preview-desc">Assign a task to someone</div>
+            </div>
+            <div class="preview-card format-card" data-type="apology" title="Late Arrival / Apology">
+                <span style="font-size:2.3rem;">🙏</span>
+                <div class="preview-title">Late Arrival / Apology</div>
+                <div class="preview-desc">Send an apology or late notice</div>
+            </div>
+            <div class="preview-card format-card" data-type="custom" title="Custom Format">
+                <span style="font-size:2.3rem;">✨</span>
+                <div class="preview-title">Custom Format</div>
+                <div class="preview-desc">Create your own format</div>
+            </div>
+            <div class="preview-card format-card" data-type="travel" title="Travel Request">
+                <span style="font-size:2.3rem;">✈️</span>
+                <div class="preview-title">Travel Request</div>
+                <div class="preview-desc">Request for business travel</div>
+            </div>
+            <div class="preview-card format-card" data-type="memo" title="Love Letter">
+                <span style="font-size:2.3rem;">💌</span>
+                <div class="preview-title">Love Letter</div>
+                <div class="preview-desc">Express your feelings to someone special</div>
+            </div>
+        </div>
+        <!-- Step 2: Dynamic Input Form -->
+        <form id="format-input-form" style="display:none;flex-direction:column;gap:1.2em;max-width:500px;margin:0 auto 2em auto;background:#fff;border-radius:12px;padding:2em 1.5em;box-shadow:0 2px 12px #b000f022;">
+            <div id="dynamic-fields"></div>
+            <div style="display:flex;gap:1em;align-items:center;justify-content:center;flex-wrap:wrap;">
+                <label for="tone" style="font-weight:600;color:#6A0DAD;">Tone:</label>
+                <select id="tone" name="tone" style="font-size:1.08em;padding:0.3em 1em;border-radius:8px;border:1px solid #ccc;">
+                    <option value="Professional">Professional</option>
+                    <option value="Friendly">Friendly</option>
+                    <option value="Formal">Formal</option>
+                    <option value="Polite">Polite</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-accent" style="margin-top:1em;">Generate Format</button>
+        </form>
+        <!-- Step 3: Output Card -->
+        <div id="format-output-card" style="display:none;background:#fff;border-radius:12px;box-shadow:0 2px 12px #b000f022;padding:2em 1.5em;max-width:600px;margin:0 auto 2em auto;">
+            <div id="format-output-text" style="white-space:pre-line;font-size:1.08em;color:#222;margin-bottom:1.2em;"></div>
+            <div style="display:flex;gap:1em;flex-wrap:wrap;justify-content:center;">
+                <button id="copy-format-btn" class="btn-accent" type="button">Copy</button>
+                <button id="edit-format-btn" class="btn-accent" type="button">Edit</button>
+                <button id="try-again-format-btn" class="btn-accent" type="button">Try Again</button>
+            </div>
+        </div>
+        <!-- Add extra spacing before testimonials -->
+        <div style="height:2.5em;"></div>
+        <!-- Testimonial Section -->
+        <div class="testimonial-section">
+            <h2>What Our Users Say</h2>
+            <div class="testimonial-row">
+                <div class="testimonial-card">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User">
+                    <div style="font-weight:700;font-size:1.1rem;color:var(--primary);margin-bottom:0.5em;">Priya S.</div>
+                    <div style="color:var(--text-sub);font-size:1.01rem;">“Genie Edits made my product photos look professional in seconds. The background remover is magic!”</div>
+                </div>
+                <div class="testimonial-card">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User">
+                    <div style="font-weight:700;font-size:1.1rem;color:var(--primary);margin-bottom:0.5em;">Rahul</div>
+                    <div style="color:var(--text-sub);font-size:1.01rem;">“The AI auto enhance and profile picture maker are so easy to use. Highly recommend for social media!”</div>
+                </div>
+                <div class="testimonial-card">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User">
+                    <div style="font-weight:700;font-size:1.1rem;color:var(--primary);margin-bottom:0.5em;">Ayesha K.</div>
+                    <div style="color:var(--text-sub);font-size:1.01rem;">“I erased unwanted objects and changed backgrounds in one click. Genie Edits saves me so much time!”</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2025 Genie Edits &mdash; Edit with AI. For Free. Forever. ✨
+        <div style="margin-top:0.7em;font-size:0.98em;">
+            <a href="#">Privacy Policy</a>|
+            <a href="#">Terms</a>|
+            <a href="#">Contact</a>
+            <span style="margin-left:1.2em;">
+                <a href="#"><span class="iconify" data-icon="mdi:instagram"></span></a>
+                <a href="#"><span class="iconify" data-icon="mdi:twitter"></span></a>
+                <a href="#"><span class="iconify" data-icon="mdi:youtube"></span></a>
+            </span>
+        </div>
+    </div>
+    <!-- Custom Feature Cards Section: Background Remover, AI Object Eraser, AI Background Replacement -->
+<!-- This section has been removed as per user request. -->
+    <script>
+// Example fix for button alignment and color usage in feature/result pages:
+// Ensure download button is placed directly below the image and uses the homepage purple
+// (This is a code comment for your reference. Actual button code is in the feature/result templates.)
+</script>
+<script>
+    // Drag & drop upload logic
+    const drop = document.getElementById('upload-drop');
+    const input = document.getElementById('image');
+    const browseBtn = document.getElementById('browse-btn');
+    if(drop && input && browseBtn) {
+        // Only trigger file input on Browse button, not on drop area click
+        browseBtn.addEventListener('click', (e) => { e.preventDefault(); input.click(); });
+        // Remove drop.addEventListener('click', ...) to avoid double trigger
+        drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('dragover'); });
+        drop.addEventListener('dragleave', (e) => { drop.classList.remove('dragover'); });
+        drop.addEventListener('drop', (e) => {
+            e.preventDefault();
+            drop.classList.remove('dragover');
+            if(e.dataTransfer.files && e.dataTransfer.files[0]) {
+                input.files = e.dataTransfer.files;
+                document.getElementById('upload-form').submit();
+            }
+        });
+        // Submit form when file is selected via Browse
+        input.addEventListener('change', function() {
+            if(input.files && input.files.length > 0) {
+                document.getElementById('upload-form').submit();
+            }
+        });
+    }
+    // Show loading overlay on submit
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                let overlay = document.createElement('div');
+                overlay.className = 'loading-overlay';
+                overlay.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;"><div class="spinner"></div><div class="loading-text">Preparing your image...</div></div>';
+                document.body.appendChild(overlay);
+            });
+        });
+    });
+    // Tool search data
+    const toolSearchData = [
+      { label: 'Background Removal', keywords: ['background', 'bg', 'remove background', 'background remover', 'bg remover'], url: '/bg_remover' },
+      { label: 'Image Upscaler', keywords: ['upscale', 'upscaler', 'hd', 'image upscale', 'make hd', 'sharpen'], url: '/upscale' },
+      { label: 'Photo Enhancer', keywords: ['enhance', 'auto enhance', 'ai enhance', 'photo enhancer', 'fix brightness', 'fix contrast'], url: '/ai_auto_enhance' },
+      { label: 'Add Background', keywords: ['add background', 'background replacement', 'replace background', 'swap background'], url: '/ai_background_replacement' },
+      { label: 'Profile Picture Maker', keywords: ['profile', 'profile picture', 'profile pic', 'profile picture maker'], url: '/ai_profile_picture_maker' },
+      { label: 'Smart Resize', keywords: ['resize', 'smart resize', 'fit platform', 'resize instagram', 'resize linkedin'], url: '/smart_resize' },
+      { label: 'Slide Creator', keywords: ['slide', 'slide creator', 'presentation', 'slide maker'], url: '/slide_creator' },
+      { label: 'Resume Shot', keywords: ['resume', 'resume shot', 'resume photo', 'professional photo'], url: '/resume_shot' },
+      { label: 'Color Corrector', keywords: ['color', 'color corrector', 'color correct', 'white balance', 'brightness'], url: '/color_corrector' },
+      { label: 'Sketch Enhancer', keywords: ['sketch', 'sketch enhancer', 'draw', 'enhance sketch'], url: '/sketch_enhancer' },
+      { label: 'Note Cleaner', keywords: ['note', 'note cleaner', 'clean note', 'scan note'], url: '/note_cleaner' },
+      { label: 'Transparent Icon', keywords: ['icon', 'transparent', 'transparent icon', 'image to icon', 'logo to icon'], url: '/transparent_icon' },
+      { label: 'Edit', keywords: ['edit', 'image edit', 'flip', 'rotate', 'add text', 'brighten'], url: '/edit' },
+    ];
+    const searchInput = document.getElementById('tool-search-bar');
+    const suggestionsBox = document.getElementById('tool-search-suggestions');
+    let selectedIdx = -1;
+    function getSuggestions(val) {
+      if (!val) return toolSearchData.slice(0, 5);
+      val = val.toLowerCase();
+      // Show if label or any keyword matches
+      return toolSearchData.filter(tool =>
+        tool.label.toLowerCase().includes(val) ||
+        tool.keywords.some(k => k.includes(val) || val.includes(k))
+      ).slice(0, 5);
+    }
+    function renderSuggestions(suggestions) {
+      suggestionsBox.innerHTML = '';
+      if (!suggestions.length) {
+        suggestionsBox.classList.remove('active');
+        return;
+      }
+      suggestions.forEach((tool, idx) => {
+        const li = document.createElement('li');
+        li.textContent = tool.label;
+        li.onclick = () => { window.location.href = tool.url; };
+        li.onmousedown = (e) => { e.preventDefault(); window.location.href = tool.url; };
+        if (idx === selectedIdx) li.classList.add('selected');
+        suggestionsBox.appendChild(li);
+      });
+      suggestionsBox.classList.add('active');
+    }
+    searchInput.addEventListener('input', function() {
+      selectedIdx = -1;
+      const val = this.value;
+      const suggestions = getSuggestions(val);
+      renderSuggestions(suggestions);
+    });
+    searchInput.addEventListener('keydown', function(e) {
+      const items = suggestionsBox.querySelectorAll('li');
+      if (e.key === 'ArrowDown') {
+        if (items.length) {
+          selectedIdx = (selectedIdx + 1) % items.length;
+          renderSuggestions(getSuggestions(this.value));
+        }
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        if (items.length) {
+          selectedIdx = (selectedIdx - 1 + items.length) % items.length;
+          renderSuggestions(getSuggestions(this.value));
+        }
+        e.preventDefault();
+      } else if (e.key === 'Enter') {
+        if (items.length && selectedIdx >= 0) {
+          items[selectedIdx].click();
+        } else {
+          // fallback: go to first suggestion if exists
+          const suggestions = getSuggestions(this.value);
+          if (suggestions.length) window.location.href = suggestions[0].url;
+        }
+      }
+    });
+    // Hide suggestions on blur
+    searchInput.addEventListener('blur', function() {
+      setTimeout(() => suggestionsBox.classList.remove('active'), 120);
+    });
+    // Show default suggestions on focus
+    searchInput.addEventListener('focus', function() {
+      renderSuggestions(getSuggestions(this.value));
+    });
+    // Scroll to result section after processing
+function scrollToResult() {
+    const resultSection = document.getElementById('result-section');
+    if(resultSection) {
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+// Call this after processing is done (e.g., after image loads)
+window.addEventListener('DOMContentLoaded', function() {
+    if(document.getElementById('result-section')) {
+        setTimeout(scrollToResult, 400);
+    }
+});
+// --- Format Generator Logic ---
+const formatTypes = {
+    leave: {
+        label: 'Leave Request',
+        fields: [
+            { name: 'name', label: 'Your Name', type: 'text', required: true },
+            { name: 'manager', label: 'Manager/HR Name', type: 'text', required: true },
+            { name: 'date', label: 'Date', type: 'date', required: true },
+            { name: 'reason', label: 'Reason (optional)', type: 'text', required: false },
+            { name: 'contact', label: 'Contact (optional)', type: 'text', required: false },
+        ]
+    },
+    work_update: {
+        label: 'Daily Work Update',
+        fields: [
+            { name: 'name', label: 'Your Name', type: 'text', required: true },
+            { name: 'manager', label: 'Team/Manager Name', type: 'text', required: true },
+            { name: 'date', label: 'Date', type: 'date', required: true },
+            { name: 'tasks_completed', label: 'Tasks Completed (one per line)', type: 'textarea', required: true },
+            { name: 'tasks_pending', label: 'Tasks Pending (one per line)', type: 'textarea', required: true },
+            { name: 'notes', label: 'Notes (optional)', type: 'textarea', required: false },
+        ]
+    },
+    meeting_summary: {
+        label: 'Meeting Summary',
+        fields: [
+            { name: 'topic', label: 'Meeting Topic', type: 'text', required: true },
+            { name: 'date', label: 'Date', type: 'date', required: true },
+            { name: 'key_points', label: 'Key Points (one per line)', type: 'textarea', required: true },
+            { name: 'action_items', label: 'Action Items (one per line, e.g. Task – Person – Due Date)', type: 'textarea', required: true },
+            { name: 'participants', label: 'Participants', type: 'text', required: false },
+            { name: 'name', label: 'Your Name', type: 'text', required: true },
+        ]
+    },
+    task_assignment: {
+        label: 'Task Assignment',
+        fields: [
+            { name: 'task', label: 'Task Name', type: 'text', required: true },
+            { name: 'assignee', label: 'Assignee', type: 'text', required: true },
+            { name: 'deadline', label: 'Deadline', type: 'date', required: true },
+            { name: 'notes', label: 'Notes (optional)', type: 'textarea', required: false },
+            { name: 'name', label: 'Your Name', type: 'text', required: true },
+        ]
+    },
+    apology: {
+        label: 'Late Arrival / Apology',
+        fields: [
+            { name: 'date', label: 'Date', type: 'date', required: true },
+            { name: 'reason', label: 'Reason', type: 'text', required: true },
+            { name: 'expected_time', label: 'Expected Arrival Time', type: 'text', required: false },
+            { name: 'manager', label: 'Manager Name', type: 'text', required: true },
+            { name: 'name', label: 'Your Name', type: 'text', required: true },
+        ]
+    },
+    custom: {
+        label: 'Custom Format',
+        fields: [
+            { name: 'prompt', label: 'Describe your format (e.g. "Request for WFH on Friday due to doctor appointment")', type: 'textarea', required: true }
+        ]
+    },
+    memo: {
+        label: 'Love Letter',
+        fields: [
+            { name: 'to', label: 'To (Name)', type: 'text', required: true },
+            { name: 'from', label: 'From (Your Name)', type: 'text', required: true },
+            { name: 'message', label: 'Your Message', type: 'textarea', required: true },
+            { name: 'special', label: 'What makes them special? (optional)', type: 'textarea', required: false }
+        ]
+    }
+};
+const formatTemplates = {
+    leave: d => `Subject: Leave Request for ${d.date}\n\nDear ${d.manager},\n\nI am writing to request a leave of absence on ${d.date}${d.reason ? ` due to ${d.reason}` : ''}.\n\nI will ensure my responsibilities are managed before I leave${d.contact ? ` and will be reachable at ${d.contact} in case of urgency` : ''}.\n\nKindly consider and grant approval.\n\nThank you.\n\nBest regards,\n${d.name}`,
+    work_update: d => `Subject: Daily Work Update – ${d.date}\n\nHello ${d.manager},\n\nPlease find my work update for today, ${d.date}:\n\n✅ Tasks Completed:\n${(d.tasks_completed || '').split('\n').map(t => t ? `– ${t}` : '').join('\n')}\n\n🔄 Tasks In Progress / Pending:\n${(d.tasks_pending || '').split('\n').map(t => t ? `– ${t}` : '').join('\n')}\n\n${d.notes ? `Notes: ${d.notes}\n\n` : ''}Regards,\n${d.name}`,
+    meeting_summary: d => `Subject: Summary – ${d.topic} (${d.date})\n\nHello Team,\n\nHere’s a quick summary of today’s meeting on ${d.topic}:\n\n🔹 Key Discussion Points:\n${(d.key_points || '').split('\n').map(t => t ? `– ${t}` : '').join('\n')}\n\n📌 Action Items:\n${(d.action_items || '').split('\n').map(t => t ? `– ${t}` : '').join('\n')}\n\nThank you to everyone who participated. Please let me know if anything needs to be added.\n\nRegards,\n${d.name}`,
+    task_assignment: d => `Subject: Task Assigned – ${d.task}\n\nHi ${d.assignee},\n\nYou have been assigned the following task:\n\n📝 Task: ${d.task}\n⏰ Deadline: ${d.deadline}\n${d.notes ? `🗒️ Notes: ${d.notes}\n` : ''}\n\nPlease acknowledge and update once completed.\n\nRegards,\n${d.name}`,
+    apology: d => `Subject: Apology for Late Arrival – ${d.date}\n\nDear ${d.manager},\n\nI wanted to inform you that I will be arriving late to the office today due to ${d.reason}.${d.expected_time ? ` I expect to be in by ${d.expected_time}.` : ''}\n\nApologies for the inconvenience, and I will ensure all tasks are managed accordingly.\n\nRegards,\n${d.name}`,
+    custom: d => `Subject: Custom Format\n${d.prompt}`,
+    memo: d => `My Dearest ${d.to},\n\n${d.message}\n\n${d.special ? `You are truly special to me because ${d.special}.\n\n` : ''}With all my love,\n${d.from}`
+};
+const formatTypeCards = document.querySelectorAll('.format-card');
+const inputForm = document.getElementById('format-input-form');
+const dynamicFields = document.getElementById('dynamic-fields');
+const outputCard = document.getElementById('format-output-card');
+const outputText = document.getElementById('format-output-text');
+let selectedType = null;
+let lastFormData = null;
+formatTypeCards.forEach(card => {
+    card.onclick = () => {
+        selectedType = card.getAttribute('data-type');
+        showInputForm(selectedType);
+        outputCard.style.display = 'none';
+    };
+});
+function showInputForm(type) {
+    inputForm.style.display = 'flex';
+    dynamicFields.innerHTML = '';
+    const fields = formatTypes[type].fields;
+    fields.forEach(f => {
+        const wrapper = document.createElement('div');
+        wrapper.style.marginBottom = '0.7em';
+        const label = document.createElement('label');
+        label.textContent = f.label;
+        label.style.fontWeight = '600';
+        label.style.display = 'block';
+        label.style.marginBottom = '0.3em';
+        let input;
+        if(f.type === 'textarea') {
+            input = document.createElement('textarea');
+            input.rows = 3;
+        } else {
+            input = document.createElement('input');
+            input.type = f.type;
+        }
+        input.name = f.name;
+        input.required = f.required;
+        input.style.width = '100%';
+        input.style.fontSize = '1.05em';
+        input.style.padding = '0.5em';
+        input.style.borderRadius = '8px';
+        input.style.border = '1.5px solid #D4B2FF';
+        wrapper.appendChild(label);
+        wrapper.appendChild(input);
+        // Only add grammar check for textarea fields or fields likely to contain sentences
+        const grammarCheckFields = ['reason', 'notes', 'tasks_completed', 'tasks_pending', 'key_points', 'action_items', 'message', 'prompt', 'purpose'];
+        if(f.type === 'textarea' || grammarCheckFields.includes(f.name)) {
+            const grammarBtn = document.createElement('button');
+            grammarBtn.type = 'button';
+            grammarBtn.textContent = 'Check Grammar';
+            grammarBtn.style.margin = '0.4em 0 0.2em 0';
+            grammarBtn.style.background = '#00BFCF';
+            grammarBtn.style.color = '#fff';
+            grammarBtn.style.border = 'none';
+            grammarBtn.style.borderRadius = '7px';
+            grammarBtn.style.padding = '0.4em 1.1em';
+            grammarBtn.style.fontWeight = '600';
+            grammarBtn.style.cursor = 'pointer';
+            grammarBtn.style.fontSize = '0.98em';
+            grammarBtn.onclick = function() {
+                grammarBtn.textContent = 'Checking...';
+                fetch('https://api.languagetoolplus.com/v2/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        text: input.value,
+                        language: 'en-US'
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    grammarBtn.textContent = 'Check Grammar';
+                    let msg = '';
+                    if(data.matches && data.matches.length > 0) {
+                        msg = data.matches.map(m => {
+                            let rep = m.replacements && m.replacements[0] ? m.replacements[0].value : '';
+                            // Suggest the full replacement sentence if available, otherwise the word
+                            let context = m.context && m.context.text ? m.context.text : '';
+                            let offset = m.context && m.context.offset ? m.context.offset : 0;
+                            let length = m.context && m.context.length ? m.context.length : 0;
+                            let original = context.substring(offset, offset + length);
+                            let suggestion = rep || original;
+                            return `<div style='margin-bottom:0.4em;'><b>Suggestion:</b> ${m.message}<br><span style='color:#6A0DAD;'>${suggestion ? '→ ' + suggestion : ''}</span> <button type='button' style='margin-left:0.5em;background:#FFD700;color:#222;border:none;border-radius:5px;padding:0.2em 0.7em;font-size:0.95em;cursor:pointer;' onclick='const val=this.closest("div").parentNode.parentNode.querySelector("textarea, input").value;this.closest("div").parentNode.parentNode.querySelector("textarea, input").value=val.replace("${original}","${suggestion}");'>Apply</button></div>`;
+                        }).join('');
+                    } else {
+                        msg = '<span style="color:#28A745;">No issues found!</span>';
+                    }
+                    let feedback = wrapper.querySelector('.grammar-feedback');
+                    if(!feedback) {
+                        feedback = document.createElement('div');
+                        feedback.className = 'grammar-feedback';
+                        feedback.style.marginTop = '0.3em';
+                        feedback.style.fontSize = '0.98em';
+                        feedback.style.background = '#f6f0ff';
+                        feedback.style.padding = '0.5em 0.7em';
+                        feedback.style.borderRadius = '7px';
+                        wrapper.appendChild(feedback);
+                    }
+                    feedback.innerHTML = msg;
+                })
+                .catch(() => {
+                    grammarBtn.textContent = 'Check Grammar';
+                    let feedback = wrapper.querySelector('.grammar-feedback');
+                    if(!feedback) {
+                        feedback = document.createElement('div');
+                        feedback.className = 'grammar-feedback';
+                        feedback.style.marginTop = '0.3em';
+                        feedback.style.fontSize = '0.98em';
+                        feedback.style.background = '#f6f0ff';
+                        feedback.style.padding = '0.5em 0.7em';
+                        feedback.style.borderRadius = '7px';
+                        wrapper.appendChild(feedback);
+                    }
+                    feedback.innerHTML = '<span style="color:#DC3545;">Grammar check failed. Try again.</span>';
+                });
+            };
+            wrapper.appendChild(grammarBtn);
+        }
+        dynamicFields.appendChild(wrapper);
+    });
+}
+inputForm.onsubmit = function(e) {
+    e.preventDefault();
+    const data = {};
+    Array.from(inputForm.elements).forEach(el => {
+        if(el.name) data[el.name] = el.value;
+    });
+    lastFormData = data;
+    let text = '';
+    if(selectedType && formatTemplates[selectedType]) {
+        text = formatTemplates[selectedType](data);
+    } else {
+        text = data.prompt || '';
+    }
+    // Tone adjustment (improved)
+    const tone = data.tone;
+    if(tone && tone !== 'Professional') {
+        text = `[Please use a ${tone.toLowerCase()} tone.]\n\n` + text;
+    }
+    outputText.textContent = text;
+    outputCard.style.display = 'block';
+};
+document.getElementById('copy-format-btn').onclick = function() {
+    navigator.clipboard.writeText(outputText.textContent);
+    this.textContent = 'Copied!';
+    setTimeout(() => { this.textContent = 'Copy'; }, 1200);
+};
+document.getElementById('edit-format-btn').onclick = function() {
+    inputForm.style.display = 'flex';
+    outputCard.style.display = 'none';
+};
+document.getElementById('try-again-format-btn').onclick = function() {
+    inputForm.reset();
+    inputForm.style.display = 'flex';
+    outputCard.style.display = 'none';
+};
+// --- Custom Feature Cards JS ---
+// Background Remover demo
+const bgUploadDemo = document.getElementById('bg-upload-demo');
+const bgPreviewSection = document.getElementById('bg-preview-section');
+bgUploadDemo && bgUploadDemo.addEventListener('change', function() {
+  bgPreviewSection.style.display = 'block';
+});
+// AI Object Eraser demo
+const objUploadDemo = document.getElementById('obj-upload-demo');
+const objPreviewSection = document.getElementById('obj-preview-section');
+objUploadDemo && objUploadDemo.addEventListener('change', function() {
+  objPreviewSection.style.display = 'block';
+});
+// AI Background Replacement demo
+const bgReplaceBtns = document.querySelectorAll('.bg-replace-btn');
+const bgReplacePreviewImg = document.getElementById('bg-replace-preview-img');
+const bgReplacePreviewBox = document.getElementById('bg-replace-preview-box');
+const bgReplaceImgs = {
+  template: "{{ url_for('static', filename='demo_after.png') }}",
+  color: "{{ url_for('static', filename='demo_enhanced.png') }}",
+  custom: "{{ url_for('static', filename='demo_before.png') }}"
+};
+bgReplaceBtns.forEach(btn => {
+  btn.addEventListener('click', function() {
+    const type = btn.getAttribute('data-type');
+    if(bgReplacePreviewImg && bgReplaceImgs[type]) {
+      bgReplacePreviewImg.style.opacity = 0;
+      setTimeout(() => {
+        bgReplacePreviewImg.src = bgReplaceImgs[type];
+        bgReplacePreviewImg.classList.remove('fade-in');
+        void bgReplacePreviewImg.offsetWidth;
+        bgReplacePreviewImg.classList.add('fade-in');
+        bgReplacePreviewImg.style.opacity = 1;
+      }, 220);
+    }
+  });
+});
+// Smooth fade animation when switching between tools (cards)
+const customCards = document.querySelectorAll('.custom-card');
+customCards.forEach(card => {
+  card.addEventListener('mouseenter', function() {
+    card.classList.add('fade-in');
+  });
+  card.addEventListener('mouseleave', function() {
+    card.classList.remove('fade-in');
+  });
+});
+// --- Animated Placeholder Logic ---
+(function() {
+    const searchInput = document.getElementById('tool-search-bar');
+    const placeholders = [
+        'Search tools…',
+        'Background Removal',
+        'Image Upscaler',
+        'Photo Enhancer',
+        'Add Background'
+    ];
+    let phIdx = 0;
+    let typing = false;
+    let interval = null;
+    let timeout = null;
+    function typePlaceholder(text, cb) {
+        typing = true;
+        let i = 0;
+        function type() {
+            if (searchInput !== document.activeElement) {
+                searchInput.setAttribute('placeholder', text.slice(0, i));
+            }
+            if (i <= text.length) {
+                searchInput.setAttribute('placeholder', text.slice(0, i));
+                i++;
+                timeout = setTimeout(type, 38 + Math.random()*40);
+            } else {
+                typing = false;
+                if (cb) setTimeout(cb, 1200);
+            }
+        }
+        type();
+    }
+    function fadeOutPlaceholder(cb) {
+        let opacity = 1;
+        function fade() {
+            opacity -= 0.13;
+            searchInput.style.setProperty('--ph-opacity', opacity);
+            if (opacity > 0) {
+                timeout = setTimeout(fade, 18);
+            } else {
+                searchInput.style.setProperty('--ph-opacity', 1);
+                if (cb) cb();
+            }
+        }
+        fade();
+    }
+    function animatePlaceholder() {
+        if (document.activeElement === searchInput) return; // Don't animate while focused
+        fadeOutPlaceholder(() => {
+            phIdx = (phIdx + 1) % placeholders.length;
+            typePlaceholder(placeholders[phIdx], () => {
+                if (document.activeElement !== searchInput) {
+                    interval = setTimeout(animatePlaceholder, 1800);
+                }
+            });
+        });
+    }
+    // Initial placeholder
+    searchInput.setAttribute('placeholder', placeholders[0]);
+    // Animate placeholder on blur
+    searchInput.addEventListener('blur', function() {
+        clearTimeout(timeout);
+        clearTimeout(interval);
+        interval = setTimeout(animatePlaceholder, 1200);
+    });
+    // Stop animation on focus
+    searchInput.addEventListener('focus', function() {
+        clearTimeout(timeout);
+        clearTimeout(interval);
+        searchInput.setAttribute('placeholder', placeholders[phIdx]);
+    });
+    // Start animation after DOM loaded
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(animatePlaceholder, 2200);
+    });
+    // CSS for fading placeholder
+    const style = document.createElement('style');
+    style.innerHTML = `#tool-search-bar::placeholder { opacity: var(--ph-opacity, 1); transition: opacity 0.18s; }`;
+    document.head.appendChild(style);
+})();
+    </script>
+    <!-- Resume Modal Logic (UI Demo Only) -->
+    <script>
+    function openResumeModal() {
+        if(document.getElementById('resume-modal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'resume-modal';
+        modal.style = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);z-index:9999;display:flex;align-items:center;justify-content:center;';
+        modal.innerHTML = `
+          <div style="background:#fff;max-width:480px;width:95vw;padding:2em 1.5em;border-radius:18px;box-shadow:0 8px 32px #6A0DAD22;position:relative;">
+            <button onclick='document.body.removeChild(document.getElementById("resume-modal"))' style='position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;cursor:pointer;color:#6A0DAD;'>&times;</button>
+            <h2 style='text-align:center;color:#6A0DAD;font-family:Poppins,sans-serif;font-size:1.5em;margin-bottom:1em;'>Smart Resume Generator</h2>
+            <div style='display:flex;flex-direction:column;gap:1em;'>
+              <button style='background:#ece1ff;color:#6A0DAD;font-weight:700;padding:0.7em 1.2em;border-radius:9px;border:none;cursor:pointer;'>Import from LinkedIn</button>
+              <button style='background:#ece1ff;color:#6A0DAD;font-weight:700;padding:0.7em 1.2em;border-radius:9px;border:none;cursor:pointer;'>Import from PDF</button>
+              <input type='text' placeholder='Add Skill (e.g. Python)' style='padding:0.6em 1em;border-radius:8px;border:1.5px solid #D4B2FF;font-size:1em;'>
+              <input type='text' placeholder='Add Project (e.g. AI Image Tool)' style='padding:0.6em 1em;border-radius:8px;border:1.5px solid #D4B2FF;font-size:1em;'>
+              <input type='text' placeholder='Add Certification (e.g. AWS Certified)' style='padding:0.6em 1em;border-radius:8px;border:1.5px solid #D4B2FF;font-size:1em;'>
+              <button style='background:linear-gradient(90deg,#b47cff 0%,#8F42FF 100%);color:#fff;font-weight:700;padding:0.9em 2em;border-radius:999px;border:none;cursor:pointer;margin-top:1em;'>Download as PDF</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    </script>
+    <style>
+    .preview-card .iconify[data-icon="mdi:file-account-outline"] {
+        font-size: 2.3rem;
+        margin-bottom: 0.7em;
+        color: #00BFCF;
+    }
+    </style>
+</body>
+</html>

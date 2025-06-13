@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-title-section">
+    <div class="main-title">{{ name }}</div>
+    <div class="main-subtext">{{ title }}</div>
+</div>
+<div class="upload-section" style="max-width:900px;margin:2em auto 2em auto;">
+    <div style="display:flex;flex-wrap:wrap;gap:2em;justify-content:center;">
+        <div style="flex:1;min-width:260px;">
+            <h3>About</h3>
+            <p>{{ bio }}</p>
+            <h3>Contact</h3>
+            <ul style="list-style:none;padding:0;">
+                {% if email %}<li><b>Email:</b> {{ email }}</li>{% endif %}
+                {% if phone %}<li><b>Phone:</b> {{ phone }}</li>{% endif %}
+                {% if location %}<li><b>Location:</b> {{ location }}</li>{% endif %}
+            </ul>
+            <h3>Skills</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.5em;">
+                {% for skill in skills.split(',') if skills %}
+                <li style="background:#f3e7ff;color:#6A0DAD;padding:0.4em 1em;border-radius:999px;font-weight:600;">{{ skill.strip() }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div style="flex:2;min-width:320px;">
+            <h3>Experience</h3>
+            <ul style="padding-left:1em;">
+                {% for exp in experience.split('\n') if experience %}
+                <li style="margin-bottom:0.7em;">{{ exp }}</li>
+                {% endfor %}
+            </ul>
+            <h3>Education</h3>
+            <ul style="padding-left:1em;">
+                {% for edu in education.split('\n') if education %}
+                <li style="margin-bottom:0.7em;">{{ edu }}</li>
+                {% endfor %}
+            </ul>
+            <h3>Projects</h3>
+            <ul style="padding-left:1em;">
+                {% for proj in projects.split('\n') if projects %}
+                <li style="margin-bottom:0.7em;">{{ proj }}</li>
+                {% endfor %}
+            </ul>
+            <h3>Links</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.7em;">
+                {% for link in links.split(',') if links %}
+                <li><a href="{{ link.strip() }}" target="_blank" style="color:#6A0DAD;font-weight:600;">{{ link.strip() }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:2em;">
+        <a href="/portfolio-preview" class="btn-accent" style="margin-right:1em;">Shareable Preview Link</a>
+        <button onclick="window.print()" class="btn-accent">Export as PDF</button>
+        <a href="/portfolio-export-zip" class="btn-accent" style="margin-left:1em;">Export as ZIP</a>
+    </div>
+</div>
+{% endblock %}

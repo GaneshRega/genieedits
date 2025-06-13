@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+/* Watermark page custom styles */
+.watermark-card {
+    max-width: 440px;
+    margin: 48px auto;
+    background: #f8f6fc;
+    border-radius: 20px;
+    box-shadow: 0 6px 32px #6a0dad22;
+    padding: 36px 32px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.watermark-title {
+    color: #6A0DAD;
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+    text-align: center;
+}
+.watermark-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 2em;
+}
+.watermark-form input[type="file"] {
+    border: none;
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-shadow: 0 1px 4px #6a0dad11;
+}
+.watermark-form input[type="text"] {
+    border: 1px solid #d1b3e0;
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.2s;
+}
+.watermark-form input[type="text"]:focus {
+    border: 1.5px solid #6A0DAD;
+    outline: none;
+}
+.btn-accent {
+    background: linear-gradient(90deg, #6A0DAD 60%, #b266ff 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px #6a0dad22;
+}
+.btn-accent:hover {
+    background: linear-gradient(90deg, #7c1fd1 60%, #c299fc 100%);
+}
+.watermark-result {
+    text-align: center;
+    margin-top: 1.5em;
+}
+.watermark-result img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px #6a0dad22;
+    margin-bottom: 1em;
+}
+.watermark-error {
+    color: #b00020;
+    background: #ffe6f0;
+    border-radius: 8px;
+    padding: 10px 0;
+    margin-top: 1em;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+</style>
+<div class="watermark-card">
+    <div class="watermark-title">Add Watermark</div>
+    <form method="POST" enctype="multipart/form-data" class="watermark-form">
+        <input type="file" name="image" accept="image/*" required>
+        <input type="text" name="watermark_text" placeholder="Enter watermark text...">
+        <div style="text-align:center;color:#888;font-size:0.97em;">or</div>
+        <input type="file" name="watermark_icon" accept="image/*">
+        <small style="color:#888;margin-bottom:8px;">(Upload a logo/icon as watermark instead of text)</small>
+        <label style="font-weight:600;color:#6A0DAD;">Watermark Position:
+            <select name="watermark_position" style="margin-left:8px;border-radius:7px;padding:0.3em 1em;">
+                <option value="bottom-right">Bottom Right</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="top-right">Top Right</option>
+                <option value="top-left">Top Left</option>
+                <option value="center">Center</option>
+            </select>
+        </label>
+        <button type="submit" class="btn-accent">Add Watermark</button>
+    </form>
+    {% if result_url %}
+        <div class="watermark-result">
+            <img src="{{ result_url }}">
+            <br>
+            <a href="{{ result_url }}" download class="btn-accent" style="margin-top:0.7em;display:inline-block;">Download</a>
+        </div>
+    {% endif %}
+    {% if error %}
+        <div class="watermark-error">{{ error }}</div>
+    {% endif %}
+</div>
+{% endblock %}

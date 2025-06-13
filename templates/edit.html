@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie Edits - Edit Image</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6A0DAD;
+            --primary-hover: #6A0DAD;
+            --bg: #ffffff;
+            --card-bg: #f3f3f3;
+            --text-main: #000000;
+            --text-sub: #666666;
+            --shadow: 0 4px 24px rgba(176,0,240,0.08);
+            --radius: 18px;
+        }
+        html, body {
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: var(--text-main);
+        }
+        .navbar {
+            background: var(--bg);
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            padding: 0.7rem 0;
+        }
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: var(--primary);
+            font-family: 'Poppins', 'Inter', Arial, sans-serif;
+        }
+        .logo img {
+            height: 44px;
+            margin-right: 12px;
+            border-radius: 10px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.08rem;
+            font-family: 'Inter', Arial, sans-serif;
+            transition: color 0.2s;
+            padding: 0.2em 0.5em;
+            border-radius: 8px;
+        }
+        .nav-links a:hover {
+            background: var(--card-bg);
+            color: var(--primary);
+        }
+        .container-main {
+            max-width: 540px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            padding: 36px 32px 32px 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 0.5em;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        button, input[type=submit] {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 600;
+            font-family: 'Poppins', Arial, sans-serif;
+            transition: background 0.2s;
+        }
+        button:hover, input[type=submit]:hover {
+            background: var(--primary-hover);
+        }
+        input[type=range] {
+            width: 200px;
+        }
+        a {
+            text-decoration: none;
+            color: var(--primary);
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) { .container-main { padding: 18px 6px; } }
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(176,0,240,0.08);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #b000f0;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            margin-top: 18px;
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .footer {
+            background: var(--bg);
+            color: var(--text-sub);
+            padding: 2em 0 1.2em 0;
+            text-align: center;
+            font-size: 1.01rem;
+            border-top: 1px solid #ececec;
+            margin-top: 3em;
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.5em;
+            transition: color 0.3s;
+        }
+        .footer a:hover {
+            color: var(--primary-hover);
+        }
+        .download-btn {
+            margin-top: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+            background: var(--primary);
+            color: #fff;
+            padding: 0.7em 1.3em;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            box-shadow: 0 2px 8px #b000f022;
+            transition: background 0.18s;
+        }
+        .download-btn:hover {
+            background: var(--primary-hover);
+            color: #fff;
+        }
+        .download-btn .iconify {
+            font-size: 1.3em;
+        }
+        .upload-label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 1.1rem;
+        }
+        .upload-drop {
+            border: 2px dashed var(--primary);
+            border-radius: var(--radius);
+            padding: 2em;
+            margin-bottom: 1.5em;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .upload-drop:hover {
+            background: rgba(176,0,240,0.04);
+            border-color: var(--primary-hover);
+        }
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 0.5em;
+            color: var(--primary);
+        }
+        .upload-cta {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.7em 1.5em;
+            border-radius: 999px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Poppins', Arial, sans-serif;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5em;
+        }
+        .upload-cta:hover {
+            background: var(--primary-hover);
+        }
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 900px) {
+            .feature-layout-row { flex-direction:column !important; gap:1.5em !important; }
+            .result-side { width:100% !important; max-width:100% !important; }
+        }
+        /* Additional styles for header and animated background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #6A0DAD 25%, transparent 25%) -50px 0,
+                        linear-gradient(225deg, #6A0DAD 25%, transparent 25%) -50px 0,
+                        linear-gradient(315deg, #6A0DAD 25%, transparent 25%),
+                        linear-gradient(45deg, #6A0DAD 25%, transparent 25%);
+            background-size: 200px 200px;
+            animation: gradientAnimation 6s ease infinite;
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0 0, 0 0, 0 0, 0 0; }
+            100% { background-position: 100px 100px, 100px 100px, 100px 100px, 100px 100px; }
+        }
+        .navbar-search {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 1rem;
+        }
+        .tool-search-bar-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+        #tool-search-bar {
+            width: 100%;
+            padding: 0.7em 2.5em 0.7em 1em;
+            border: 2px solid var(--primary);
+            border-radius: 999px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #tool-search-bar:focus {
+            border-color: var(--primary-hover);
+        }
+        .tool-search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .tool-search-suggestions li {
+            padding: 0.8em 1.2em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .tool-search-suggestions li:hover {
+            background: rgba(106,13,173,0.1);
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        /* End of additional styles */
+    </style>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Start Creating button removed as requested -->
+            </div>
+        </div>
+    </nav>
+    <div class="feature-layout-row" style="display:flex;flex-wrap:wrap;gap:2.5em;justify-content:center;align-items:flex-start;max-width:1100px;margin:2.5em auto 2em auto;">
+        <!-- Upload Section -->
+        <div class="upload-section" style="background:var(--card-bg);border-radius:var(--radius);padding:2.2em 2em 2em 2em;min-width:320px;max-width:420px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;">
+            <div class="preview-title">Edit Image</div>
+            <form id="upload-form" method="POST" enctype="multipart/form-data" style="width:100%;margin-bottom:0;">
+                <label class="upload-label" for="image">Upload Image</label>
+                <div class="upload-drop" id="upload-drop">
+                    <span class="iconify upload-icon" data-icon="mdi:image-plus"></span>
+                    <span style="color:var(--text-sub);font-size:1.05em;">Drag & drop or click to select</span>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                </div>
+                <button class="upload-cta" id="browse-btn" type="submit">Upload</button>
+            </form>
+            {% if error %}<div class="error-message" style="color:#b00020;font-weight:600;margin-top:1em;">{{ error }}</div>{% endif %}
+        </div>
+        <!-- Result Section -->
+        {% if before_image_url or after_image_url %}
+        <div class="result-side" style="flex:1 1 340px;max-width:420px;display:flex;flex-direction:column;gap:1.5em;align-items:center;">
+            <!-- Original Card -->
+            <div class="before-card" style="width:100%;background:#fff;border-radius:18px;box-shadow:0 4px 24px #b000f022;border:1.5px solid #e9e1f7;padding:1.2em 1em;display:flex;flex-direction:column;align-items:center;">
+                <div class="text-lg font-bold mb-2" style="color:#6A0DAD;font-size:1.15rem;">Original</div>
+                <div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:#f6f0ff;border-radius:14px;overflow:hidden;">
+                    {% if before_image_url %}
+                    <img src="{{ before_image_url }}" alt="Original" style="object-fit:contain;width:100%;height:100%;max-height:220px;">
+                    {% else %}
+                    <img src="https://placehold.co/320x220?text=No+Image" alt="No Image" style="object-fit:contain;width:100%;height:100%;max-height:220px;">
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Result Card -->
+            <div class="after-card" style="width:100%;background:#fff;border-radius:18px;box-shadow:0 4px 24px #b000f022;border:1.5px solid #e9e1f7;padding:1.2em 1em;display:flex;flex-direction:column;align-items:center;">
+                <div class="text-lg font-bold mb-2" style="color:#6A0DAD;font-size:1.15rem;">Result</div>
+                <div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:#f6f0ff;border-radius:14px;overflow:hidden;">
+                    {% if after_image_url %}
+                    <img src="{{ after_image_url }}" alt="Result" style="object-fit:contain;width:100%;height:100%;max-height:220px;">
+                    {% else %}
+                    <img src="https://placehold.co/320x220?text=No+Result" alt="No Result" style="object-fit:contain;width:100%;height:100%;max-height:220px;">
+                    {% endif %}
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.7em;width:100%;margin-top:1.2em;align-items:center;">
+                    {% if after_image_url %}
+                    <a id="download-btn" class="btn-accent" href="{{ after_image_url }}" download style="background:#6A0DAD;width:100%;max-width:220px;text-align:center;">Download</a>
+                    {% endif %}
+                    <button onclick="window.location.reload()" class="reset-btn" style="background:#fff;color:#6A0DAD;border:2px solid #6A0DAD;border-radius:999px;padding:0.9em 2.2em;font-weight:700;font-size:1.13rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;transition:background 0.2s;width:100%;max-width:220px;">New Upload</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="footer">
+        &copy; 2025 Genie Edits &mdash; Edit with AI. For Free. Forever. ✨
+    </div>
+</body>
+</html>

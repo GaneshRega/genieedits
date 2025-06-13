@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Genie Edits – Free AI Image Tools{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6A0DAD;
+            --primary-light: #A066D6;
+            --primary-dark: #4B0082;
+            --primary-hover: #7B1FA2;
+            --secondary: #00BFCF;
+            --highlight: #FFD700;
+            --success: #28A745;
+            --error: #DC3545;
+            --warning: #FF9800;
+            --bg: #FFFFFF;
+            --card-bg: #F4F4F4;
+            --border: #CCCCCC;
+            --text-main: #1E1E1E;
+            --text-sub: #666666;
+            --disabled: #AAAAAA;
+            --shadow: 0 4px 24px rgba(106,13,173,0.08);
+            --radius: 18px;
+        }
+        html, body {
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: var(--text-main);
+        }
+        .navbar {
+            background: var(--bg);
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            padding: 0.7rem 0;
+        }
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: var(--primary);
+            font-family: 'Poppins', 'Inter', Arial, sans-serif;
+        }
+        .logo img {
+            height: 44px;
+            margin-right: 12px;
+            border-radius: 10px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.08rem;
+            font-family: 'Inter', Arial, sans-serif;
+            transition: color 0.2s;
+            padding: 0.2em 0.5em;
+            border-radius: 8px;
+        }
+        .nav-links a:hover {
+            background: var(--card-bg);
+            color: var(--primary);
+        }
+        .footer {
+            background: var(--bg);
+            color: var(--text-sub);
+            padding: 2em 0 1.2em 0;
+            text-align: center;
+            font-size: 1.01rem;
+            border-top: 1px solid #ececec;
+            margin-top: 3em;
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.5em;
+            transition: color 0.3s;
+        }
+        .footer a:hover {
+            color: var(--primary-hover);
+        }
+        .container-main {
+            max-width: 540px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            padding: 36px 32px 32px 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .container-main { padding: 18px 6px; }
+        }
+        /* Animated background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .animated-bg canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        /* Search bar */
+        .navbar-search {
+            flex: 1;
+            margin: 0 2rem;
+        }
+        .tool-search-bar-container {
+            position: relative;
+            width: 100%;
+        }
+        #tool-search-bar {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            font-size: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        #tool-search-bar:focus {
+            border-color: var(--primary);
+        }
+        .tool-search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 0.2rem;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+        .tool-search-suggestions.active {
+            display: block;
+        }
+        .tool-search-suggestions li {
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .tool-search-suggestions li:hover {
+            background: var(--card-bg);
+        }
+        /* Global loading overlay */
+        #global-loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(106,13,173,0.10);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary);
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loading-text {
+            margin-top: 0.5em;
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+    <!-- Global Loading Overlay -->
+    <div id="global-loading-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(106,13,173,0.10);z-index:99999;align-items:center;justify-content:center;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="spinner"></div>
+            <div class="loading-text">Processing, please wait...</div>
+        </div>
+    </div>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+    
+        </div>
+    </nav>
+    {% block content %}{% endblock %}
+    <div class="footer">
+        &copy; 2025 Genie Edits &mdash; Edit with AI. For Free. Forever. ✨
+        <div style="margin-top:0.7em;font-size:0.98em;">
+            <a href="#">Privacy Policy</a>|
+            <a href="#">Terms</a>|
+            <a href="#">Contact</a>
+            <span style="margin-left:1.2em;">
+                <a href="#"><span class="iconify" data-icon="mdi:instagram"></span></a>
+                <a href="#"><span class="iconify" data-icon="mdi:twitter"></span></a>
+                <a href="#"><span class="iconify" data-icon="mdi:youtube"></span></a>
+            </span>
+        </div>
+    </div>
+    <script>
+    // Tool search data (from index.html)
+    const toolSearchData = [
+      { label: 'Background Removal', keywords: ['background', 'bg', 'remove background', 'background remover', 'bg remover'], url: '/bg_remover' },
+      { label: 'Image Upscaler', keywords: ['upscale', 'upscaler', 'hd', 'image upscale', 'make hd', 'sharpen'], url: '/upscale' },
+      { label: 'Photo Enhancer', keywords: ['enhance', 'auto enhance', 'ai enhance', 'photo enhancer', 'fix brightness', 'fix contrast'], url: '/ai_auto_enhance' },
+      { label: 'Add Background', keywords: ['add background', 'background replacement', 'replace background', 'swap background'], url: '/ai_background_replacement' },
+      { label: 'Profile Picture Maker', keywords: ['profile', 'profile picture', 'profile pic', 'profile picture maker'], url: '/ai_profile_picture_maker' },
+      { label: 'Smart Resize', keywords: ['resize', 'smart resize', 'fit platform', 'resize instagram', 'resize linkedin'], url: '/smart_resize' },
+      { label: 'Slide Creator', keywords: ['slide', 'slide creator', 'presentation', 'slide maker'], url: '/slide_creator' },
+      { label: 'Resume Shot', keywords: ['resume', 'resume shot', 'resume photo', 'professional photo'], url: '/resume_shot' },
+      { label: 'Color Corrector', keywords: ['color', 'color corrector', 'color correct', 'white balance', 'brightness'], url: '/color_corrector' },
+      { label: 'Sketch Enhancer', keywords: ['sketch', 'sketch enhancer', 'draw', 'enhance sketch'], url: '/sketch_enhancer' },
+      { label: 'Note Cleaner', keywords: ['note', 'note cleaner', 'clean note', 'scan note'], url: '/note_cleaner' },
+      { label: 'Transparent Icon', keywords: ['icon', 'transparent', 'transparent icon', 'image to icon', 'logo to icon'], url: '/transparent_icon' },
+      { label: 'Edit', keywords: ['edit', 'image edit', 'flip', 'rotate', 'add text', 'brighten'], url: '/edit' },
+    ];
+    const searchInput = document.getElementById('tool-search-bar');
+    const suggestionsBox = document.getElementById('tool-search-suggestions');
+    let selectedIdx = -1;
+    function getSuggestions(val) {
+      if (!val) return toolSearchData.slice(0, 5);
+      val = val.toLowerCase();
+      return toolSearchData.filter(tool =>
+        tool.label.toLowerCase().includes(val) ||
+        tool.keywords.some(k => k.includes(val) || val.includes(k))
+      ).slice(0, 5);
+    }
+    function renderSuggestions(suggestions) {
+      suggestionsBox.innerHTML = '';
+      if (!suggestions.length) {
+        suggestionsBox.classList.remove('active');
+        return;
+      }
+      suggestions.forEach((tool, idx) => {
+        const li = document.createElement('li');
+        li.textContent = tool.label;
+        li.onclick = () => { window.location.href = tool.url; };
+        li.onmousedown = (e) => { e.preventDefault(); window.location.href = tool.url; };
+        if (idx === selectedIdx) li.classList.add('selected');
+        suggestionsBox.appendChild(li);
+      });
+      suggestionsBox.classList.add('active');
+    }
+    if (searchInput && suggestionsBox) {
+      searchInput.addEventListener('input', function() {
+        selectedIdx = -1;
+        const val = this.value;
+        const suggestions = getSuggestions(val);
+        renderSuggestions(suggestions);
+      });
+      searchInput.addEventListener('keydown', function(e) {
+        const items = suggestionsBox.querySelectorAll('li');
+        if (e.key === 'ArrowDown') {
+          if (items.length) {
+            selectedIdx = (selectedIdx + 1) % items.length;
+            renderSuggestions(getSuggestions(this.value));
+          }
+          e.preventDefault();
+        } else if (e.key === 'ArrowUp') {
+          if (items.length) {
+            selectedIdx = (selectedIdx - 1 + items.length) % items.length;
+            renderSuggestions(getSuggestions(this.value));
+          }
+          e.preventDefault();
+        } else if (e.key === 'Enter') {
+          if (items.length && selectedIdx >= 0) {
+            items[selectedIdx].click();
+          } else {
+            const suggestions = getSuggestions(this.value);
+            if (suggestions.length) window.location.href = suggestions[0].url;
+          }
+        }
+      });
+      searchInput.addEventListener('blur', function() {
+        setTimeout(() => suggestionsBox.classList.remove('active'), 120);
+      });
+      searchInput.addEventListener('focus', function() {
+        renderSuggestions(getSuggestions(this.value));
+      });
+    }
+    // Show loading overlay on any form submit
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                var overlay = document.getElementById('global-loading-overlay');
+                if (overlay) overlay.style.display = 'flex';
+            });
+        });
+        // Show loading overlay on feature card click (navigation)
+        document.querySelectorAll('.preview-card[onclick]').forEach(function(card) {
+            var orig = card.getAttribute('onclick');
+            card.onclick = function(e) {
+                var overlay = document.getElementById('global-loading-overlay');
+                if (overlay) overlay.style.display = 'flex';
+                setTimeout(function() {
+                    window.location = orig.replace("window.location.href=", "").replace(/'/g, "");
+                }, 120);
+            };
+        });
+    });
+    </script>
+    <script>
+        // Animated background script
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const colors = ['#6A0DAD', '#A066D6', '#4B0082', '#7B1FA2'];
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 1;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                particles.push(new Particle(x, y));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((particle) => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+
+        init();
+        animate();
+    </script>
+</body>
+</html>

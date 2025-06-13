@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-main" style="max-width: 900px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px #b000f011; padding: 32px 24px;">
+    <h1 style="font-family: 'Poppins', Arial, sans-serif; color: #6A0DAD; font-size: 2.1rem; margin-bottom: 1.2em; text-align:center;">Photo to Sketch/Cartoon</h1>
+    <form id="sketch-form" enctype="multipart/form-data" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+        <div class="upload-drop" id="upload-drop" style="border:2.5px dashed #6A0DAD;border-radius:18px;background:#f9f6ff;width:100%;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:1.2em;transition:border-color 0.2s,background 0.2s;">
+            <span class="iconify upload-icon" data-icon="mdi:image-plus" style="font-size:2.3rem;color:#6A0DAD;margin-bottom:0.5em;"></span>
+            <span id="choose-file-label" style="color:#666;font-size:1.05em;">Drag & drop or click to select</span>
+            <input type="file" id="sketch-image" name="image" accept="image/png,image/jpeg" required style="display:none;">
+        </div>
+        <div class="toggle-group" style="width:100%;justify-content:center;margin-bottom:0.5em;">
+            <button type="button" class="toggle-btn selected" id="sketch-toggle">Sketch</button>
+            <button type="button" class="toggle-btn" id="cartoon-toggle">Cartoon</button>
+        </div>
+        <button class="btn" type="submit" style="margin-top:0.5em;width:100%;max-width:220px;">Convert</button>
+    </form>
+    <div id="sketch-loading" class="loading" style="display:none;text-align:center;">Processing image...</div>
+    <div style="margin-top:2em;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1.2em;">
+            <div style="width:100%;text-align:center;">
+                <label style="display:block;margin-bottom:0.5em;">Original:</label>
+                <img id="sketch-original" class="preview-img" style="display:none;max-width:180px;max-height:180px;" />
+            </div>
+            <div style="width:100%;text-align:center;">
+                <label style="display:block;margin-bottom:0.5em;">Result:</label>
+                <img id="sketch-result" class="preview-img" style="display:none;max-width:180px;max-height:180px;" />
+                <a id="sketch-download" class="btn" style="display:none;margin-top:1em;width:100%;max-width:180px;" download="result.png">Download Image</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+// Sketch/Cartoon Converter
+let sketchMode = 'sketch';
+document.getElementById('sketch-toggle').onclick = function(e) {
+    e.preventDefault();
+    sketchMode = 'sketch';
+    this.classList.add('selected');
+    document.getElementById('cartoon-toggle').classList.remove('selected');
+};
+document.getElementById('cartoon-toggle').onclick = function(e) {
+    e.preventDefault();
+    sketchMode = 'cartoon';
+    this.classList.add('selected');
+    document.getElementById('sketch-toggle').classList.remove('selected');
+};
+const sketchForm = document.getElementById('sketch-form');
+const sketchOriginal = document.getElementById('sketch-original');
+const sketchResult = document.getElementById('sketch-result');
+const sketchLoading = document.getElementById('sketch-loading');
+const sketchDownload = document.getElementById('sketch-download');
+sketchForm.onsubmit = async e => {
+    e.preventDefault();
+    sketchLoading.style.display = 'block';
+    sketchResult.style.display = 'none';
+    sketchDownload.style.display = 'none';
+    const file = document.getElementById('sketch-image').files[0];
+    if (!file) return;
+    // Show original
+    const reader = new FileReader();
+    reader.onload = e => {
+        sketchOriginal.src = e.target.result;
+        sketchOriginal.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+    // Send to backend
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('mode', sketchMode);
+    const res = await fetch('/sketch', { method: 'POST', body: formData });
+    sketchLoading.style.display = 'none';
+    if (res.ok) {
+        const data = await res.json();
+        sketchResult.src = 'data:image/png;base64,' + data.image;
+        sketchResult.style.display = 'block';
+        sketchDownload.href = sketchResult.src;
+        sketchDownload.style.display = 'inline-block';
+    } else {
+        alert('Failed to process image.');
+    }
+};
+// Drag & drop for upload
+const drop = document.getElementById('upload-drop');
+if (drop) {
+    const fileInput = document.getElementById('sketch-image');
+    drop.addEventListener('click', () => fileInput.click());
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.background = '#f3eaff'; });
+    drop.addEventListener('dragleave', e => { e.preventDefault(); drop.style.background = '#f9f6ff'; });
+    drop.addEventListener('drop', e => {
+        e.preventDefault();
+        drop.style.background = '#f9f6ff';
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            const label = document.getElementById('choose-file-label');
+            label.textContent = fileInput.files[0].name;
+        }
+    });
+    fileInput.addEventListener('change', function() {
+        const label = document.getElementById('choose-file-label');
+        if (this.files && this.files[0]) {
+            label.textContent = this.files[0].name;
+        } else {
+            label.textContent = 'Drag & drop or click to select';
+        }
+    });
+}
+</script>
+{% endblock %}

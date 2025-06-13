@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resume Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6A0DAD;
+            --primary-light: #8F42FF;
+            --accent: #00BFCF;
+            --bg: #fff;
+            --card-bg: #f7f7fa;
+            --border: #e0e0e0;
+            --text-main: #222;
+            --text-sub: #666;
+            --radius: 18px;
+            --shadow: 0 4px 24px rgba(106,13,173,0.08);
+        }
+        html, body {
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: var(--text-main);
+        }
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #f0f0f5 25%, #ffffff 25%, #ffffff 50%, #f0f0f5 50%, #f0f0f5 75%, #ffffff 75%, #ffffff);
+            background-size: 400% 400%;
+            animation: gradient 8s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1em 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5em;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .logo img {
+            height: 40px;
+            margin-right: 0.5em;
+        }
+        .navbar-search {
+            flex: 1;
+            margin: 0 2em;
+        }
+        .tool-search-bar-container {
+            position: relative;
+            width: 100%;
+        }
+        #tool-search-bar {
+            width: 100%;
+            padding: 0.8em 2em 0.8em 1em;
+            border: 2px solid #e0e0e0;
+            border-radius: 999px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        #tool-search-bar:focus {
+            border-color: #6A0DAD;
+            outline: none;
+        }
+        .tool-search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .tool-search-suggestions li {
+            padding: 0.8em 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .tool-search-suggestions li:hover {
+            background: #f7f7fa;
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1em;
+        }
+        /* Existing styles... */
+        .resume-modal {
+            max-width: 540px;
+            width: 98vw;
+            margin: 2.5em auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px #6A0DAD22;
+            padding: 2.5em 2em 2em 2em;
+            position: relative;
+        }
+        .resume-modal h2 {
+            text-align: center;
+            color: #6A0DAD;
+            font-family: 'Poppins',sans-serif;
+            font-size: 1.7em;
+            margin-bottom: 1em;
+        }
+        .resume-step {
+            display: none;
+        }
+        .resume-step.active {
+            display: block;
+        }
+        .step-btn-row {
+            display: flex;
+            gap: 1em;
+            justify-content: center;
+            margin-top: 1.5em;
+        }
+        .btn-accent {
+            background: linear-gradient(90deg,#b47cff 0%,#8F42FF 100%);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 0.9em 2em;
+            font-weight: 700;
+            font-size: 1.13rem;
+            font-family: 'Poppins', Arial, sans-serif;
+            cursor: pointer;
+            margin-bottom: 0.7em;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px #6A0DAD11;
+        }
+        .btn-accent:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .template-row {
+            display: flex;
+            gap: 1em;
+            margin-bottom: 1.2em;
+            justify-content: center;
+        }
+        .template-card {
+            flex: 1 1 120px;
+            min-width: 100px;
+            background: #f8f8ff;
+            border-radius: 12px;
+            border: 2.5px solid #eee;
+            cursor: pointer;
+            padding: 1em 0.5em;
+            text-align: center;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        .template-card.selected {
+            border: 2.5px solid #8F42FF;
+            box-shadow: 0 2px 12px #8F42FF22;
+        }
+        .template-card .template-preview {
+            height: 38px;
+            border-radius: 8px;
+            margin-bottom: 0.5em;
+        }
+        .template-card.classic .template-preview {
+            background: linear-gradient(135deg,#fff,#f8f8ff);
+        }
+        .template-card.purple .template-preview {
+            background: linear-gradient(135deg,#8F42FF 0%,#fff 100%);
+        }
+        .template-card.blue .template-preview {
+            background: linear-gradient(135deg,#78b4ff 0%,#e0f7fa 100%);
+        }
+        .template-card span {
+            font-size: 1em;
+            color: #6A0DAD;
+            font-weight: 600;
+        }
+        .resume-preview {
+            margin-top: 2em;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px #6A0DAD11;
+            padding: 2em 2em 2em 2em;
+            min-height: 320px;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: #222;
+            transition: box-shadow 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Start Creating button removed as requested -->
+            </div>
+        </div>
+    </nav>
+    <div class="resume-modal">
+        <h2>Smart Resume Generator</h2>
+        <form id="resume-wizard">
+            <!-- Step 1: Basic Details -->
+            <div class="resume-step active" id="step-1">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="headline">Headline</label>
+                    <input type="text" id="headline" name="headline">
+                </div>
+                <div class="form-group">
+                    <label for="summary">Summary</label>
+                    <textarea id="summary" name="summary"></textarea>
+                </div>
+                <div class="step-btn-row">
+                    <button type="button" class="btn-accent" id="next-1">Next: Education</button>
+                </div>
+            </div>
+            <!-- Step 2: Education -->
+            <div class="resume-step" id="step-2">
+                <div class="form-group">
+                    <label for="education">Education</label>
+                    <textarea id="education" name="education" placeholder="e.g. BSc in Computer Science, XYZ University, 2020"></textarea>
+                </div>
+                <div class="step-btn-row">
+                    <button type="button" class="btn-accent" id="prev-2">Previous</button>
+                    <button type="button" class="btn-accent" id="next-2">Next: Work Experience</button>
+                </div>
+            </div>
+            <!-- Step 3: Work Experience -->
+            <div class="resume-step" id="step-3">
+                <div class="form-group">
+                    <label for="experience">Work Experience</label>
+                    <textarea id="experience" name="experience" placeholder="e.g. Software Engineer at ABC Corp, 2021-2023"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="skills">Skills (comma separated)</label>
+                    <input type="text" id="skills" name="skills">
+                </div>
+                <div class="step-btn-row">
+                    <button type="button" class="btn-accent" id="prev-3">Previous</button>
+                    <button type="button" class="btn-accent" id="next-3">Next: Template</button>
+                </div>
+            </div>
+            <!-- Step 4: Template Selection -->
+            <div class="resume-step" id="step-4">
+                <div class="template-row">
+                    <div class="template-card classic selected" data-template="classic">
+                        <div class="template-preview"></div>
+                        <span>Classic</span>
+                    </div>
+                    <div class="template-card purple" data-template="purple">
+                        <div class="template-preview"></div>
+                        <span>Purple</span>
+                    </div>
+                    <div class="template-card blue" data-template="blue">
+                        <div class="template-preview"></div>
+                        <span>Blue</span>
+                    </div>
+                </div>
+                <div class="step-btn-row">
+                    <button type="button" class="btn-accent" id="prev-4">Previous</button>
+                    <button type="button" class="btn-accent" id="finish">Finish & Preview</button>
+                </div>
+            </div>
+        </form>
+        <div class="resume-preview" id="resume-preview">
+            <h1 id="preview-fullName">Your Name</h1>
+            <h2 id="preview-headline">Headline</h2>
+            <div class="section">
+                <div class="item-title">Summary</div>
+                <div class="item-desc" id="preview-summary">A short summary about yourself.</div>
+            </div>
+            <div class="section">
+                <div class="item-title">Education</div>
+                <div class="item-desc" id="preview-education">Your education details go here.</div>
+            </div>
+            <div class="section">
+                <div class="item-title">Work Experience</div>
+                <div class="item-desc" id="preview-experience">Your work experience goes here.</div>
+            </div>
+            <div class="section">
+                <div class="item-title">Skills</div>
+                <div class="skills-list" id="preview-skills">
+                    <span class="skill-badge">Skill 1</span>
+                    <span class="skill-badge">Skill 2</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    // Step navigation logic
+    const steps = Array.from(document.querySelectorAll('.resume-step'));
+    let currentStep = 0;
+    function showStep(idx) {
+        steps.forEach((step, i) => step.classList.toggle('active', i === idx));
+        currentStep = idx;
+    }
+    document.getElementById('next-1').onclick = () => showStep(1);
+    document.getElementById('prev-2').onclick = () => showStep(0);
+    document.getElementById('next-2').onclick = () => showStep(2);
+    document.getElementById('prev-3').onclick = () => showStep(1);
+    document.getElementById('next-3').onclick = () => showStep(3);
+    document.getElementById('prev-4').onclick = () => showStep(2);
+    document.getElementById('finish').onclick = () => showStep(4);
+    // Template selection
+    let selectedTemplate = 'classic';
+    document.querySelectorAll('.template-card').forEach(card => {
+        card.onclick = function() {
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedTemplate = card.getAttribute('data-template');
+            // Optionally update preview style here
+        };
+    });
+    // Live preview logic
+    const form = document.getElementById('resume-wizard');
+    const previewFullName = document.getElementById('preview-fullName');
+    const previewHeadline = document.getElementById('preview-headline');
+    const previewSummary = document.getElementById('preview-summary');
+    const previewEducation = document.getElementById('preview-education');
+    const previewExperience = document.getElementById('preview-experience');
+    const previewSkills = document.getElementById('preview-skills');
+    form.addEventListener('input', function() {
+        previewFullName.textContent = form.fullName.value || 'Your Name';
+        previewHeadline.textContent = form.headline.value || 'Headline';
+        previewSummary.textContent = form.summary.value || 'A short summary about yourself.';
+        previewEducation.textContent = form.education.value || 'Your education details go here.';
+        previewExperience.textContent = form.experience.value || 'Your work experience goes here.';
+        // Skills
+        previewSkills.innerHTML = '';
+        (form.skills.value || '').split(',').forEach(skill => {
+            if(skill.trim()) {
+                const span = document.createElement('span');
+                span.className = 'skill-badge';
+                span.textContent = skill.trim();
+                previewSkills.appendChild(span);
+            }
+        });
+        if(!form.skills.value) {
+            previewSkills.innerHTML = '<span class="skill-badge">Skill 1</span> <span class="skill-badge">Skill 2</span>';
+        }
+    });
+    </script>
+</body>
+</html>

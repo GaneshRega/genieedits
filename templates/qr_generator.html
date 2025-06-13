@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-main" style="max-width: 500px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px #b000f011; padding: 32px 24px;">
+    <h1 style="font-family: 'Poppins', Arial, sans-serif; color: #6A0DAD; font-size: 2.1rem; margin-bottom: 1.2em; text-align:center;">QR Code Generator</h1>
+    <form method="POST" enctype="multipart/form-data" style="display:flex;flex-direction:column;align-items:center;gap:1.2em;">
+        <input type="text" name="qr_text" placeholder="Enter text or URL" required style="width:100%;padding:0.7em 1em;font-size:1.1em;border-radius:10px;border:1.5px solid #D4B2FF;">
+        <div style="display:flex;gap:1em;width:100%;justify-content:center;">
+            <label style="display:flex;align-items:center;gap:0.5em;">
+                <span style="font-size:0.98em;">FG Color</span>
+                <input type="color" name="fg_color" value="#000000" style="width:2em;height:2em;border:none;">
+            </label>
+            <label style="display:flex;align-items:center;gap:0.5em;">
+                <span style="font-size:0.98em;">BG Color</span>
+                <input type="color" name="bg_color" value="#ffffff" style="width:2em;height:2em;border:none;">
+            </label>
+        </div>
+        <label style="width:100%;text-align:center;">
+            <span style="font-size:0.98em;">Center Icon (optional, PNG/JPG, 80x80px recommended):</span>
+            <input type="file" name="icon" accept="image/png,image/jpeg" style="margin-top:0.5em;">
+        </label>
+        <button type="submit" style="background:#6A0DAD;color:#fff;border:none;border-radius:999px;padding:0.9em 2.2em;font-weight:700;font-size:1.13rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;margin-bottom:0.7em;transition:background 0.2s;">
+            <span class="iconify" data-icon="mdi:qrcode-scan" style="font-size:1.3em;vertical-align:middle;margin-right:0.5em;"></span>
+            Generate QR Code
+        </button>
+    </form>
+    {% if qr_code_url %}
+    <div style="margin-top:2em;text-align:center;">
+        <img src="{{ qr_code_url }}" alt="QR Code" style="max-width:220px;">
+        <div style="margin-top:1em;">
+            <a href="{{ qr_code_url }}" download="qrcode.png" style="background:#6A0DAD;color:#fff;border:none;border-radius:999px;padding:0.8em 2em;font-weight:700;font-size:1.08rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;text-decoration:none;transition:background 0.2s;display:inline-block;">
+                <span class="iconify" data-icon="mdi:download" style="font-size:1.2em;vertical-align:middle;margin-right:0.5em;"></span>
+                Download PNG
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

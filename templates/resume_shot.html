@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Animated Background -->
+<div class="animated-bg"></div>
+<!-- Header -->
+<nav class="navbar">
+    <div class="container">
+        <div class="logo" onclick="window.location.href='/'">
+            <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+            Genie Edits
+        </div>
+        <div class="navbar-search">
+            <div class="tool-search-bar-container">
+                <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <!-- Start Creating button removed as requested -->
+        </div>
+    </div>
+</nav>
+<div class="feature-layout-row" style="display:flex;flex-wrap:wrap;gap:2.5em;justify-content:center;align-items:flex-start;max-width:1100px;margin:2.5em auto 2em auto;">
+  <!-- Upload Section (Left) -->
+  <div class="upload-section" style="background:#fff;border-radius:18px;box-shadow:0 4px 24px #b000f022;border:1.5px solid #e9e1f7;padding:2.2em 2em 2em 2em;min-width:320px;max-width:340px;width:100%;display:flex;flex-direction:column;align-items:center;">
+    <div class="upload-label" style="font-weight:700;font-size:1.13rem;color:#6A0DAD;margin-bottom:1.2em;">Upload Image</div>
+    <form id="upload-form" method="POST" enctype="multipart/form-data" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+      <div class="upload-drop" id="upload-drop" style="border:2.5px dashed #6A0DAD;border-radius:18px;background:#fff;width:100%;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:1.2em;transition:border-color 0.2s,background 0.2s;">
+        <span class="iconify upload-icon" data-icon="mdi:image-plus" style="font-size:2.3rem;color:#6A0DAD;margin-bottom:0.5em;"></span>
+        <span style="color:#666;font-size:1.05em;">Drag & drop or click to select</span>
+        <input type="file" id="image" name="image" accept="image/*" required style="display:none;">
+      </div>
+      <div style="width:100%;margin-bottom:1em;">
+        <label for="template" style="font-weight:600;color:#6A0DAD;">Choose Resume Template:</label>
+        <select name="template" id="template" style="width:100%;margin-top:0.4em;padding:0.5em 1em;border-radius:10px;border:1.5px solid #D4B2FF;font-size:1.08em;">
+          <option value="classic" {% if template_selected=='classic' %}selected{% endif %}>Classic (White)</option>
+          <option value="purple" {% if template_selected=='purple' %}selected{% endif %}>Purple Card</option>
+          <option value="blue-gradient" {% if template_selected=='blue-gradient' %}selected{% endif %}>Blue Gradient</option>
+        </select>
+        <div style="display:flex;gap:0.5em;margin-top:0.7em;justify-content:space-between;">
+          <div style="flex:1;height:28px;border-radius:8px;background:linear-gradient(135deg,#fff,#f8f8ff);border:1.5px solid #eee;"></div>
+          <div style="flex:1;height:28px;border-radius:8px;background:linear-gradient(135deg,#8F42FF 0%,#fff 100%);border:1.5px solid #eee;"></div>
+          <div style="flex:1;height:28px;border-radius:8px;background:linear-gradient(135deg,#78b4ff 0%,#e0f7fa 100%);border:1.5px solid #eee;"></div>
+        </div>
+      </div>
+      <button class="upload-cta" id="browse-btn" type="submit" style="background:#6A0DAD;color:#fff;border:none;border-radius:999px;padding:0.9em 2.2em;font-weight:700;font-size:1.13rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;margin-bottom:0.7em;transition:background 0.2s;">Upload</button>
+    </form>
+    {% if error %}<div class="error-message" style="color:#b00020;font-weight:600;margin-top:1em;">{{ error }}</div>{% endif %}
+  </div>
+  <!-- Images Section (Right) -->
+  <div class="images-section" style="flex:2 1 480px;max-width:700px;display:flex;flex-direction:column;gap:2.2em;width:100%;">
+    <!-- Original Image Card -->
+    <div class="before-card" style="background:#fff;border-radius:18px;box-shadow:0 4px 24px #b000f022;border:1.5px solid #e9e1f7;padding:1.5em 1em;display:flex;flex-direction:column;align-items:center;min-width:220px;max-width:420px;width:100%;">
+      <div class="before-label" style="font-weight:700;color:#6A0DAD;font-size:1.1em;margin-bottom:0.7em;">Original</div>
+      <div style="width:100%;height:16rem;display:flex;align-items:center;justify-content:center;background:#f6f0ff;border-radius:1em;overflow:hidden;margin-bottom:1em;">
+        {% if before_image_url %}
+          <img src="{{ before_image_url }}" alt="Original" style="object-fit:contain;width:100%;height:100%;max-height:15rem;">
+        {% else %}
+          <img src="https://placehold.co/320x240?text=No+Image" alt="No Image" style="object-fit:contain;width:100%;height:100%;max-height:15rem;">
+        {% endif %}
+      </div>
+    </div>
+    <!-- Result Image Card -->
+    <div class="after-card" style="background:#fff;border-radius:18px;box-shadow:0 4px 24px #b000f022;border:1.5px solid #e9e1f7;padding:1.5em 1em;display:flex;flex-direction:column;align-items:center;min-width:220px;max-width:420px;width:100%;">
+      <div class="after-label" style="font-weight:700;color:#6A0DAD;font-size:1.1em;margin-bottom:0.7em;">Result</div>
+      <div style="width:100%;height:16rem;display:flex;align-items:center;justify-content:center;background:#f6f0ff;border-radius:1em;overflow:hidden;margin-bottom:1em;">
+        {% if after_image_url %}
+          <img src="{{ after_image_url }}" alt="Result" style="object-fit:contain;width:100%;height:100%;max-height:15rem;">
+        {% else %}
+          <img src="https://placehold.co/320x240?text=No+Result" alt="No Result" style="object-fit:contain;width:100%;height:100%;max-height:15rem;">
+        {% endif %}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.7em;width:100%;margin-top:1.2em;align-items:center;">
+        {% if after_image_url %}
+        <a id="download-btn" class="btn-accent" href="{{ after_image_url }}" download style="background:#6A0DAD;width:100%;max-width:220px;text-align:center;">Download Image</a>
+        {% endif %}
+        {% if pdf_url %}
+        <a id="download-pdf-btn" class="btn-accent" href="{{ pdf_url }}" download style="background:linear-gradient(90deg,#8F42FF,#78b4ff);width:100%;max-width:220px;text-align:center;">Download as PDF</a>
+        {% endif %}
+        <button onclick="window.location.href='/resume_shot'" class="reset-btn" style="background:#fff;color:#6A0DAD;border:2px solid #6A0DAD;border-radius:999px;padding:0.9em 2.2em;font-weight:700;font-size:1.13rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;transition:background 0.2s;width:100%;max-width:220px;">New Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+<style>
+:root {
+    --primary: #6A0DAD;
+    --primary-hover: #6A0DAD;
+}
+
+@media (max-width: 900px) {
+  .feature-layout-row { flex-direction:column !important; gap:1.5em !important; }
+  .result-side { width:100% !important; max-width:100% !important; }
+}
+</style>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie Edits - Result</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png.png') }}">
+    <style>
+        :root {
+            --primary: #b000f0;
+            --primary-hover: #d400d4;
+            --bg: #ffffff;
+            --card-bg: #f3f3f3;
+            --text-main: #000000;
+            --text-sub: #666666;
+            --shadow: 0 4px 24px rgba(176,0,240,0.08);
+            --radius: 18px;
+        }
+        html, body {
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Poppins', Arial, sans-serif;
+            color: var(--text-main);
+        }
+        .navbar {
+            background: var(--bg);
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            padding: 0.7rem 0;
+        }
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: var(--primary);
+            font-family: 'Poppins', 'Inter', Arial, sans-serif;
+        }
+        .logo img {
+            height: 24px;
+            width: 24px;
+            min-width: 24px;
+            min-height: 24px;
+            max-width: 24px;
+            max-height: 24px;
+            margin-right: 8px;
+            border-radius: 6px;
+            object-fit: contain;
+            display: inline-block;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.08rem;
+            font-family: 'Inter', Arial, sans-serif;
+            transition: color 0.2s;
+            padding: 0.2em 0.5em;
+            border-radius: 8px;
+        }
+        .nav-links a:hover {
+            background: var(--card-bg);
+            color: var(--primary);
+        }
+        .main-flex {
+            display: flex;
+            flex-direction: row;
+            max-width: 900px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            min-height: 420px;
+        }
+        .image-side {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 32px 16px;
+            background: #faf8ff;
+            border-radius: 18px 0 0 18px;
+            min-height: 420px;
+        }
+        .preview-container {
+            background: #fff;
+            border: 1.5px solid #ececec;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px #b000f011;
+            padding: 18px 18px 10px 18px;
+            margin-bottom: 1.2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 260px;
+            min-height: 220px;
+            max-width: 100%;
+        }
+        .image-side img {
+            max-width: 340px;
+            max-height: 340px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 0.7em;
+        }
+        .edit-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 32px 24px;
+            border-left: 1px solid #ececec;
+        }
+        .edit-title {
+            color: var(--primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.2em;
+        }
+        .edit-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .button {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            transition: background 0.2s;
+            text-align: center;
+        }
+        .button:hover {
+            background: var(--primary-hover);
+        }
+        .button.bg { background: #28a745; }
+        .button.bg:hover { background: #43c463; }
+        .button.up { background: #ff9800; }
+        .button.up:hover { background: #ffb84d; }
+        .button.edit { background: #b000f0; }
+        .button.edit:hover { background: #d400d4; }
+        .button.another { background: #888; }
+        .button.another:hover { background: #aaa; }
+        .download-btn {
+            margin-top: 0.5em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+            background: var(--primary);
+            color: #fff;
+            padding: 0.7em 1.3em;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            box-shadow: 0 2px 8px #b000f022;
+            transition: background 0.18s, box-shadow 0.18s;
+            border: none;
+            outline: none;
+        }
+        .download-btn:hover {
+            background: var(--primary-hover);
+            color: #fff;
+            box-shadow: 0 4px 16px #b000f033;
+        }
+        .download-btn .iconify {
+            font-size: 1.3em;
+        }
+        .card.card-action {
+            margin-top: 2.5em;
+            max-width: 370px;
+            margin-left: auto;
+            margin-right: auto;
+            background: linear-gradient(120deg,#fff,#f7f7fa 80%);
+            border-radius: 22px;
+            box-shadow: 0 4px 16px #6A0DAD22;
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+        .card.card-action:hover {
+            box-shadow: 0 8px 32px #6A0DAD33;
+            transform: translateY(-2px) scale(1.02);
+        }
+        .card-body {
+            padding: 1.5em 1.2em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            margin: 0 0 0.5em 0;
+            color: #6A0DAD;
+        }
+        .card-text {
+            margin: 0;
+            color: #444;
+            font-size: 1rem;
+        }
+        @media (max-width: 900px) {
+            .main-flex { flex-direction: column; min-height: unset; }
+            .image-side, .edit-side { padding: 18px 8px; border: none; border-radius: 18px 18px 0 0; }
+            .edit-side { border-top: 1px solid #ececec; border-left: none; }
+            .preview-container { min-width: unset; min-height: 180px; }
+        }
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(176,0,240,0.08);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #b000f0;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            margin-top: 18px;
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .footer {
+            background: var(--bg);
+            color: var(--text-sub);
+            padding: 2em 0 1.2em 0;
+            text-align: center;
+            font-size: 1.01rem;
+            border-top: 1px solid #ececec;
+            margin-top: 3em;
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.5em;
+            transition: color 0.3s;
+        }
+        .footer a:hover {
+            color: var(--primary-hover);
+        }
+        .card {
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-top: 1.5em;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+        }
+        .card-action {
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .card-action:hover {
+            box-shadow: 0 4px 16px rgba(106,13,173,0.2);
+        }
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f3f4f6 25%, transparent 25%) -50px 0,
+                        linear-gradient(225deg, #f3f4f6 25%, transparent 25%) -50px 0,
+                        linear-gradient(315deg, #f3f4f6 25%, transparent 25%);
+            background-size: 100px 100px;
+            z-index: -1;
+            animation: bgAnimation 8s linear infinite;
+        }
+        @keyframes bgAnimation {
+            0% { background-position: -200px 0, -200px 0, -200px 0; }
+            100% { background-position: 0 0, 0 0, 0 0; }
+        }
+    </style>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Start Creating button removed as requested -->
+            </div>
+        </div>
+    </nav>
+    <div class="main-flex">
+        <div class="image-side">
+            {% if error %}
+                <div style="color:#b00020;font-weight:600;margin-bottom:1em;">{{ error }}</div>
+            {% elif image_url %}
+                <div class="preview-container">
+                    <img src="{{ image_url }}" alt="Result Image">
+                    <a href="{{ image_url }}" download class="download-btn">
+                        <span class="iconify" data-icon="mdi:download"></span> Download
+                    </a>
+                </div>
+            {% else %}
+                <div class="preview-container" style="justify-content:center;min-height:180px;">
+                    <div style="color:#888;font-size:1.1em;">No image to preview. Please try again.</div>
+                </div>
+            {% endif %}
+            <!-- Resume Template Card -->
+            <div class="card card-action" onclick="window.location.href='/resume-builder'">
+                <div class="card-body">
+                    <div style="display:flex;align-items:center;gap:0.7em;margin-bottom:0.7em;">
+                        <span style="font-size:2em;">🧠</span>
+                        <span style="font-size:1.25em;font-weight:700;color:#6A0DAD;letter-spacing:0.5px;">Smart Resume Generator</span>
+                    </div>
+                    <div style="color:#555;font-size:1.08em;margin-bottom:0.7em;">Create a clean, modern, ATS-friendly resume with live preview, beautiful templates, and PDF download. No watermarks, no hassle.</div>
+                    <button class="btn" style="background:linear-gradient(90deg,#b47cff 0%,#8F42FF 100%);color:#fff;border:none;border-radius:999px;padding:0.7em 2em;font-weight:700;font-size:1.08em;cursor:pointer;box-shadow:0 2px 8px #6A0DAD11;" onclick="window.location.href='/resume-builder';event.stopPropagation();">Create Resume</button>
+                </div>
+            </div>
+        </div>
+        <div class="edit-side">
+            <div class="edit-title">What next?</div>
+            <div class="edit-actions">
+                <a class="button bg" href="/replace_bg/{{ filename }}">Add/Change Background</a>
+                <a class="button up" href="/upscale/{{ filename }}">Upscale Image</a>
+                <a class="button edit" href="/edit/{{ filename }}">Edit Image</a>
+                <a class="button another" href="/">Start Another</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        &copy; 2025 Genie Edits &mdash; Edit with AI. For Free. Forever. ✨
+    </div>
+</body>
+</html>

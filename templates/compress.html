@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.compress-card {
+    max-width: 440px;
+    margin: 48px auto;
+    background: #f8f6fc;
+    border-radius: 20px;
+    box-shadow: 0 6px 32px #6a0dad22;
+    padding: 36px 32px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.compress-title {
+    color: #6A0DAD;
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+    text-align: center;
+}
+.compress-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 2em;
+}
+.compress-form input[type="file"] {
+    border: none;
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-shadow: 0 1px 4px #6a0dad11;
+}
+.compress-form label {
+    font-size: 1rem;
+    color: #6A0DAD;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0;
+}
+.compress-form input[type="range"] {
+    width: 140px;
+    accent-color: #6A0DAD;
+    margin: 0 8px;
+}
+.compress-form output {
+    min-width: 32px;
+    display: inline-block;
+    color: #6A0DAD;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+.btn-accent {
+    background: linear-gradient(90deg, #6A0DAD 60%, #b266ff 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px #6a0dad22;
+}
+.btn-accent:hover {
+    background: linear-gradient(90deg, #7c1fd1 60%, #c299fc 100%);
+}
+.compress-result {
+    text-align: center;
+    margin-top: 1.5em;
+}
+.compress-result img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px #6a0dad22;
+    margin-bottom: 1em;
+}
+.compress-error {
+    color: #b00020;
+    background: #ffe6f0;
+    border-radius: 8px;
+    padding: 10px 0;
+    margin-top: 1em;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+</style>
+<div class="compress-card">
+    <div class="compress-title">Image Compressor</div>
+    <form method="POST" enctype="multipart/form-data" class="compress-form">
+        <input type="file" name="image" accept="image/*" required>
+        <label>
+            Quality:
+            <input type="range" name="quality" min="10" max="95" value="80" oninput="this.nextElementSibling.value = this.value">
+            <output>80</output>
+        </label>
+        <button type="submit" class="btn-accent">Compress</button>
+    </form>
+    {% if result_url %}
+        <div class="compress-result">
+            <img src="{{ result_url }}">
+            <br>
+            <a href="{{ result_url }}" download class="btn-accent" style="margin-top:0.7em;display:inline-block;">Download</a>
+        </div>
+    {% endif %}
+    {% if error %}
+        <div class="compress-error">{{ error }}</div>
+    {% endif %}
+</div>
+{% endblock %}

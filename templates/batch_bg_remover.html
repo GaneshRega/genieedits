@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-main" style="max-width:600px;margin:40px auto;background:#fff;border-radius:22px;box-shadow:0 8px 32px #b000f022,0 2px 8px #b000f011;border:1.5px solid #e9e1f7;padding:2.5em 2em;">
+    <div style="text-align:center;margin-bottom:1.2em;">
+        <span class="iconify" data-icon="mdi:folder-multiple-image" style="font-size:3.2rem;color:#6A0DAD;"></span>
+    </div>
+    <h1 style="color:#6A0DAD;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:2rem;font-weight:800;margin-bottom:1.2em;">Batch Background Remover</h1>
+    <form method="POST" enctype="multipart/form-data" style="margin-bottom:2em;display:flex;flex-direction:column;align-items:center;gap:1.2em;">
+        <input type="file" name="images" accept="image/*" multiple required style="padding:0.7em 1em;border-radius:10px;border:1.5px solid #D4B2FF;width:100%;">
+        <button type="submit" class="btn-accent" style="background:#6A0DAD;color:#fff;border:none;border-radius:999px;padding:0.9em 2.2em;font-weight:700;font-size:1.13rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;transition:background 0.2s;">
+            <span class="iconify" data-icon="mdi:image-remove-outline" style="font-size:1.3em;vertical-align:middle;margin-right:0.5em;"></span>
+            Remove Backgrounds
+        </button>
+    </form>
+    {% if zip_url %}
+        <div style="text-align:center;margin-top:2em;">
+            <a href="{{ zip_url }}" download="batch_results.zip" class="btn-accent" style="background:#6A0DAD;color:#fff;border:none;border-radius:999px;padding:0.8em 2em;font-weight:700;font-size:1.08rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;text-decoration:none;transition:background 0.2s;display:inline-block;">
+                <span class="iconify" data-icon="mdi:download" style="font-size:1.2em;vertical-align:middle;margin-right:0.5em;"></span>
+                Download All Results (ZIP)
+            </a>
+        </div>
+    {% endif %}
+    {% if error %}
+        <div style="color:#b00020;text-align:center;margin-top:1.5em;font-weight:600;">{{ error }}</div>
+    {% endif %}
+</div>
+{% endblock %}

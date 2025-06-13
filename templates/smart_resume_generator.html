@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resume Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/resume_builder.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { background: #f7f8fa; margin: 0; font-family: 'Inter', 'Poppins', Arial, sans-serif; }
+        .container { max-width: 1200px; margin: 2em auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px #6A0DAD11; padding: 2em; display: flex; flex-wrap: wrap; gap: 2em; }
+        .form-section { flex: 1 1 350px; min-width: 320px; }
+        .preview-section { flex: 1 1 400px; min-width: 340px; background: #f7f7fa; border-radius: 16px; box-shadow: 0 2px 12px #6A0DAD11; padding: 1.5em; }
+        .progress-bar { display: flex; gap: 0.5em; margin-bottom: 1.5em; }
+        .progress-step { flex: 1; height: 6px; border-radius: 6px; background: #e0e0e0; }
+        .progress-step.active { background: #6A0DAD; }
+        .template-list { display: flex; gap: 1em; margin: 1em 0; }
+        .template-thumb { background: #f8f8ff; border-radius: 12px; border: 2.5px solid #eee; cursor: pointer; padding: 0.7em 0.5em; text-align: center; min-width: 120px; transition: border 0.2s, box-shadow 0.2s; }
+        .template-thumb.selected { border: 2.5px solid #6A0DAD; box-shadow: 0 2px 12px #6A0DAD22; }
+        .btn { background: linear-gradient(90deg,#b47cff 0%,#8F42FF 100%); color: #fff; border: none; border-radius: 999px; padding: 0.8em 2em; font-weight: 700; font-size: 1.1rem; cursor: pointer; margin-top: 1em; transition: background 0.2s; box-shadow: 0 2px 8px #6A0DAD11; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .input-row { display: flex; gap: 1em; }
+        .input-row > * { flex: 1; }
+        .field-list { margin-bottom: 1em; }
+        .field-list .entry { display: flex; gap: 0.5em; align-items: center; margin-bottom: 0.5em; }
+        .field-list .entry input, .field-list .entry textarea { flex: 1; }
+        .remove-btn { background: #eee; color: #6A0DAD; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 1.2em; cursor: pointer; }
+        .add-btn { background: #e6e6ff; color: #6A0DAD; border: none; border-radius: 8px; padding: 0.2em 1em; font-weight: 600; cursor: pointer; margin-bottom: 0.5em; }
+        .tag-input { display: flex; flex-wrap: wrap; gap: 0.4em; background: #f7f7fa; border-radius: 8px; padding: 0.5em; border: 1px solid #e0e0e0; }
+        .tag { background: #ece1ff; color: #6A0DAD; border-radius: 8px; padding: 0.2em 0.7em; margin-right: 0.2em; display: flex; align-items: center; }
+        .tag .remove-tag { margin-left: 0.3em; cursor: pointer; font-weight: bold; }
+        @media (max-width: 900px) { .container { flex-direction: column; padding: 1em; } .preview-section { min-width: unset; } }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Start Creating button removed as requested -->
+            </div>
+        </div>
+    </nav>
+<div class="container">
+    <div class="form-section">
+        <div class="progress-bar">
+            <div class="progress-step active" id="step-bar-1"></div>
+            <div class="progress-step" id="step-bar-2"></div>
+            <div class="progress-step" id="step-bar-3"></div>
+            <div class="progress-step" id="step-bar-4"></div>
+        </div>
+        <form id="resume-form">
+            <h2>Smart Resume Generator</h2>
+            <label>Full Name</label>
+            <input type="text" name="name" required>
+            <label>Email</label>
+            <input type="email" name="email" required>
+            <label>Phone</label>
+            <input type="text" name="phone" required>
+            <label>Profile Summary</label>
+            <textarea name="summary" rows="2" placeholder="e.g. Passionate developer with..." required></textarea>
+            <div class="field-list" id="education-list">
+                <label>Education</label>
+                <!-- Entries will be injected here -->
+            </div>
+            <button type="button" class="add-btn" id="add-education">+ Add Education</button>
+            <div class="field-list" id="experience-list">
+                <label>Work Experience</label>
+            </div>
+            <button type="button" class="add-btn" id="add-experience">+ Add Experience</button>
+            <div class="field-list" id="project-list">
+                <label>Projects</label>
+            </div>
+            <button type="button" class="add-btn" id="add-project">+ Add Project</button>
+            <label>Skills</label>
+            <div class="tag-input" id="skills-input"></div>
+            <input type="text" id="skill-suggest" placeholder="Type a skill and press Enter">
+            <label>Certifications</label>
+            <input type="text" name="certifications" placeholder="e.g. AWS Certified, PMP">
+            <label>Languages</label>
+            <input type="text" name="languages" placeholder="e.g. English, Hindi, French">
+            <label>Achievements</label>
+            <input type="text" name="achievements" placeholder="e.g. Hackathon Winner">
+            <div class="template-list">
+                <div class="template-thumb selected" data-template="modern">Modern</div>
+                <div class="template-thumb" data-template="classic">Classic</div>
+                <div class="template-thumb" data-template="minimal">Minimal</div>
+                <div class="template-thumb" data-template="accent">Accent</div>
+            </div>
+            <button type="button" class="btn" id="download-pdf">Download as PDF</button>
+        </form>
+    </div>
+    <div class="preview-section">
+        <h3 style="margin-top:0;">Live Preview</h3>
+        <div id="resume-preview"></div>
+    </div>
+</div>
+<script src="/static/js/resume_builder.js"></script>
+</body>
+</html>

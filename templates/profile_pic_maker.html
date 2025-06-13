@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie Edits - AI Profile Picture Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #6A0DAD; --primary-hover: #6A0DAD; --bg: #ffffff; --card-bg: #f3f3f3; --text-main: #000000; --text-sub: #666666; --shadow: 0 4px 24px rgba(176,0,240,0.08); --radius: 18px; }
+        html, body { background: var(--bg); margin: 0; padding: 0; font-family: 'Inter', 'Poppins', Arial, sans-serif; color: var(--text-main); }
+        .navbar { background: var(--bg); color: var(--text-main); box-shadow: var(--shadow); padding: 0.7rem 0; }
+        .navbar .container { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .logo { display: flex; align-items: center; font-weight: 900; font-size: 2rem; letter-spacing: 2px; cursor: pointer; color: var(--primary); font-family: 'Poppins', 'Inter', Arial, sans-serif; }
+        .logo img { height: 44px; margin-right: 12px; border-radius: 10px; }
+        .nav-links { display: flex; align-items: center; gap: 2rem; }
+        .nav-links a { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 1.08rem; font-family: 'Inter', Arial, sans-serif; transition: color 0.2s; padding: 0.2em 0.5em; border-radius: 8px; }
+        .nav-links a:hover { background: var(--card-bg); color: var(--primary); }
+        .container-main { max-width: 1200px; margin: 40px auto 0 auto; padding: 0; background: transparent; box-shadow: none; }
+        .preview-title { color: #6A0DAD; font-size: 2.1rem; font-family: 'Poppins', Arial, sans-serif; font-weight: 700; margin-bottom: 0.7em; text-align: center; }
+        #result-section { display: flex; flex-direction: row; gap: 3.5rem; justify-content: center; align-items: flex-start; width: 100%; max-width: 1200px; margin: 2.5em auto 0 auto; padding: 0 1.5rem; }
+        .upload-section { background: #fff; border-radius: 18px; box-shadow: var(--shadow); border: 1.5px solid #e9e1f7; display: flex; flex-direction: column; align-items: center; padding: 2.5em 2em; min-width: 300px; max-width: 370px; width: 100%; }
+        .upload-label { font-weight: 700; font-size: 1.13rem; color: #6A0DAD; margin-bottom: 1.2em; }
+        .upload-drop { border: 2.5px dashed #6A0DAD; border-radius: 18px; background: #f9f6ff; width: 100%; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 1.2em; transition: border-color 0.2s, background 0.2s; }
+        .upload-drop:hover { background: rgba(176,0,240,0.04); border-color: var(--primary-hover); }
+        .upload-icon { font-size: 2.3rem; color: #6A0DAD; margin-bottom: 0.5em; }
+        #image { display: none; }
+        .upload-cta { background: var(--primary); color: #fff; border: none; padding: 0.9em 2.2em; border-radius: 999px; font-weight: 700; font-size: 1.13rem; font-family: 'Poppins',Arial,sans-serif; cursor: pointer; margin-bottom: 0.7em; transition: background 0.2s; width: 100%; }
+        .upload-cta:hover { background: var(--primary-hover); }
+        .images-section { display: flex; flex-direction: column; gap: 2.2em; width: 100%; max-width: 700px; }
+        .before-card, .after-card { background: #fff; border-radius: 18px; box-shadow: var(--shadow); border: 1.5px solid #e9e1f7; padding: 1.5em 1em; display: flex; flex-direction: column; align-items: center; min-width: 220px; max-width: 420px; width: 100%; }
+        .before-label, .after-label { font-weight: 700; color: var(--primary); font-size: 1.1em; margin-bottom: 0.7em; }
+        .before-card img, .after-card img { max-width: 100%; max-height: 320px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 1em; }
+        .download-btn { margin-top: 18px; display: inline-flex; align-items: center; gap: 0.5em; background: var(--primary); color: #fff; padding: 0.7em 1.3em; border-radius: 999px; font-weight: 700; font-size: 1.05rem; text-decoration: none; box-shadow: 0 2px 8px #b000f022; transition: background 0.18s; }
+        .download-btn:hover { background: var(--primary-hover); color: #fff; }
+        .reset-btn { background: #fff; color: var(--primary); border: 2px solid var(--primary); border-radius: 999px; font-weight: 700; font-size: 1.05rem; padding: 0.7em 1.3em; margin-top: 10px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+        .reset-btn:hover { background: var(--primary); color: #fff; }
+        #adjust-btn { margin-left:0; }
+        #adjust-btn:hover { background:#f6f0ff; color:#4B0082; border-color:#4B0082; }
+        #platform { min-width:120px; }
+        @media (max-width: 900px) { #result-section { flex-direction: column !important; gap: 2rem !important; align-items: stretch !important; } .images-section { max-width: 100% !important; } .upload-section { max-width: 100% !important; } }
+        @media (max-width: 600px) {
+          #upload-form > div[style*='display:flex'] { flex-direction:column; gap:0.5em; }
+          #adjust-btn, #platform { width:100%; }
+        }
+        /* Additional styles for header and animated background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #6A0DAD 0%, #FF4081 100%);
+            animation: gradientBG 6s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .navbar { 
+            position: relative; 
+            z-index: 10; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 1rem 2rem; 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px); 
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
+        }
+
+        .navbar .container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            width: 100%; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0; 
+        }
+
+        .navbar-search {
+            flex: 1;
+            margin: 0 2rem;
+        }
+
+        .tool-search-bar-container {
+            position: relative;
+            width: 100%;
+        }
+
+        #tool-search-bar {
+            width: 100%;
+            padding: 0.7em 1.2em;
+            border: 1.5px solid #D4B2FF;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #333;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #tool-search-bar:focus {
+            border-color: var(--primary);
+        }
+
+        .tool-search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1.5px solid #D4B2FF;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .tool-search-suggestion {
+            padding: 0.8em 1.2em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .tool-search-suggestion:hover {
+            background: #f6f0ff;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* End of additional styles */
+    </style>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+                Genie Edits
+            </div>
+            <div class="navbar-search">
+                <div class="tool-search-bar-container">
+                    <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                    <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Start Creating button removed as requested -->
+            </div>
+        </div>
+    </nav>
+    <div class="container-main">
+        <div class="preview-title">AI Profile Picture Maker</div>
+        <div id="result-section">
+            <!-- Upload Section (Left) -->
+            <div class="upload-section">
+                <div class="upload-label">Upload Image</div>
+                <form id="upload-form" method="POST" enctype="multipart/form-data" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+                    <div class="upload-drop" id="upload-drop">
+                        <span class="iconify upload-icon" data-icon="mdi:image-plus"></span>
+                        <span style="color:#666;font-size:1.05em;">Drag & drop or click to select</span>
+                        <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/jpg" required>
+                    </div>
+                    <div style="width:100%;display:flex;align-items:center;gap:0.7em;margin-bottom:0.7em;">
+                        <select id="platform" name="platform" style="flex:1;font-size:1.07em;padding:0.5em 1em;border-radius:8px;border:1.5px solid #D4B2FF;">
+                            <option value="instagram">Instagram</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="teams">Teams</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <button type="button" id="adjust-btn" style="background:#fff;color:#6A0DAD;border:1.5px solid #6A0DAD;border-radius:8px;padding:0.5em 1.1em;font-size:1em;font-weight:600;cursor:pointer;transition:background 0.18s;">Adjust</button>
+                    </div>
+                    <button class="upload-cta" id="browse-btn" type="submit" style="width:auto;padding:0.7em 1.5em;font-size:1.05rem;min-width:120px;">Create Profile Pic</button>
+                </form>
+                {% if error %}<div class="error-message" style="color:#b00020;font-weight:600;margin-top:1em;">{{ error }}</div>{% endif %}
+            </div>
+            <!-- Images Section (Right) -->
+            <div class="images-section">
+                <!-- Original Image Card -->
+                <div class="before-card">
+                    <div class="before-label">Original</div>
+                    <div style="width:100%;height:18rem;display:flex;align-items:center;justify-content:center;background:#f6f0ff;border-radius:1.2em;overflow:hidden;margin-bottom:1em;">
+                        {% if before_image_url %}
+                            <img src="{{ before_image_url }}" alt="Original" style="object-fit:contain;width:100%;height:100%;max-height:17rem;">
+                        {% else %}
+                            <img src="https://placehold.co/320x240?text=No+Image" alt="No Image" style="object-fit:contain;width:100%;height:100%;max-height:17rem;">
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Result Image Card -->
+                <div class="after-card">
+                    <div class="after-label">Result</div>
+                    <div style="width:100%;height:18rem;display:flex;align-items:center;justify-content:center;background:#f6f0ff;border-radius:1.2em;overflow:hidden;margin-bottom:1em;">
+                        {% if after_image_url %}
+                            <img src="{{ after_image_url }}" alt="Result" style="object-fit:contain;width:100%;height:100%;max-height:17rem;">
+                        {% else %}
+                            <img src="https://placehold.co/320x240?text=No+Result" alt="No Result" style="object-fit:contain;width:100%;height:100%;max-height:17rem;">
+                        {% endif %}
+                    </div>
+                    {% if after_image_url %}
+                        <a href="{{ after_image_url }}" download class="download-btn">Download</a>
+                    {% endif %}
+                    <button onclick="window.location.href='/ai_profile_picture_maker'" class="reset-btn">New Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer" style="background:var(--bg);color:var(--text-sub);padding:2em 0 1.2em 0;text-align:center;font-size:1.01rem;border-top:1px solid #ececec;margin-top:3em;">
+        &copy; 2025 Genie Edits &mdash; Edit with AI. For Free. Forever. ✨
+    </div>
+    <script>
+        // Drag & drop for upload
+        const drop = document.getElementById('upload-drop');
+        const fileInput = document.getElementById('image');
+        drop.addEventListener('click', () => fileInput.click());
+        drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.background = '#f3eaff'; });
+        drop.addEventListener('dragleave', e => { e.preventDefault(); drop.style.background = '#f9f6ff'; });
+        drop.addEventListener('drop', e => {
+            e.preventDefault();
+            drop.style.background = '#f9f6ff';
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+            }
+        });
+        document.getElementById('adjust-btn').onclick = function() {
+    alert('Adjust options for the selected platform will be available soon!');
+};
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-main" style="max-width:500px;margin:40px auto;background:#fff;border-radius:18px;box-shadow:0 4px 24px #b000f011;padding:32px 24px;">
+    <h1 style="color:#6A0DAD;text-align:center;">AI Object Eraser</h1>
+    <form method="POST" enctype="multipart/form-data" style="margin-bottom:2em;">
+        <input type="file" name="image" accept="image/*" required>
+        <input type="file" name="mask" accept="image/*" required>
+        <button type="submit" class="btn-accent" style="margin-top:1em;">Erase Object</button>
+    </form>
+    <div style="font-size:0.95em;color:#666;">Upload your image and a black & white mask (white = area to erase).</div>
+    {% if result_url %}
+        <div style="text-align:center;">
+            <img src="{{ result_url }}" style="max-width:100%;">
+            <a href="{{ result_url }}" download class="btn-accent" style="margin-top:1em;">Download</a>
+        </div>
+    {% endif %}
+    {% if error %}
+        <div style="color:#b00020;text-align:center;">{{ error }}</div>
+    {% endif %}
+</div>
+{% endblock %}

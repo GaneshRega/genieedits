@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Animated Background -->
+<div class="animated-bg"></div>
+<!-- Header -->
+<nav class="navbar">
+    <div class="container">
+        <div class="logo" onclick="window.location.href='/'">
+            <img src="{{ url_for('static', filename='logo.png.png') }}" alt="Genie Edits Logo">
+            Genie Edits
+        </div>
+        <div class="navbar-search">
+            <div class="tool-search-bar-container">
+                <input id="tool-search-bar" type="text" placeholder="Search tools…" autocomplete="off">
+                <ul id="tool-search-suggestions" class="tool-search-suggestions"></ul>
+            </div>
+        </div>
+        <div class="nav-actions"></div>
+    </div>
+</nav>
+<div class="feature-layout-row" style="display:flex;flex-wrap:wrap;gap:2.5em;justify-content:center;align-items:flex-start;max-width:1100px;margin:2.5em auto 2em auto;">
+  <!-- Upload Section -->
+  <div class="upload-section" style="background:#fff;border-radius:22px;box-shadow:0 8px 32px #b000f022,0 2px 8px #b000f011;border:1.5px solid #e9e1f7;display:flex;flex-direction:column;align-items:center;padding:2.5em 2em;min-width:320px;max-width:370px;width:100%;">
+    <div class="preview-title" style="color:#6A0DAD;font-size:2.1rem;font-family:'Poppins',Arial,sans-serif;font-weight:700;margin-bottom:0.7em;">Note Cleaner</div>
+    <div style="color:#666;font-size:1.08em;margin-bottom:1.5em;text-align:center;">Turn paper notes into crisp scans. Cleans creases, shadows, and sharpens text.</div>
+    <form id="upload-form" method="POST" enctype="multipart/form-data" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+      <div class="upload-drop" id="upload-drop" style="border:2.5px dashed #6A0DAD;border-radius:18px;background:#f9f6ff;width:100%;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:1.2em;transition:border-color 0.2s,background 0.2s;">
+        <span class="iconify upload-icon" data-icon="mdi:image-plus" style="font-size:2.3rem;color:#6A0DAD;margin-bottom:0.5em;"></span>
+        <span style="color:#666;font-size:1.05em;">Drag & drop or click to select</span>
+        <input type="file" id="image" name="image" accept="image/*" required style="display:none;">
+      </div>
+      <button class="upload-cta" id="browse-btn" type="submit" style="background:#6A0DAD;color:#fff;border:none;border-radius:999px;padding:0.9em 2.2em;font-weight:700;font-size:1.13rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;margin-bottom:0.7em;transition:background 0.2s;">Upload</button>
+    </form>
+    {% if error %}<div class="error-message" style="color:#b00020;font-weight:600;margin-top:1em;">{{ error }}</div>{% endif %}
+  </div>
+  <!-- Result Section -->
+  {% if before_image_url or after_image_url %}
+  <div class="result-side" style="flex:1 1 340px;max-width:420px;display:flex;flex-direction:column;gap:1.5em;align-items:center;">
+    <!-- Original Card -->
+    <div class="before-card" style="width:100%;background:#fff;border-radius:18px;box-shadow:0 4px 24px #b000f022;border:1.5px solid #e9e1f7;padding:1.2em 1em;display:flex;flex-direction:column;align-items:center;">
+      <div class="before-label" style="color:#6A0DAD;font-size:1.15rem;font-weight:700;margin-bottom:0.7em;">Original</div>
+      <div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:#f6f0ff;border-radius:14px;overflow:hidden;">
+        {% if before_image_url %}
+          <img src="{{ before_image_url }}" alt="Original" style="object-fit:contain;width:100%;height:100%;max-height:220px;border-radius:12px;box-shadow:0 2px 8px #b000f022;margin-bottom:0.7em;">
+        {% else %}
+          <img src="https://placehold.co/320x220?text=No+Image" alt="No Image" style="object-fit:contain;width:100%;height:100%;max-height:220px;border-radius:12px;box-shadow:0 2px 8px #b000f022;margin-bottom:0.7em;">
+        {% endif %}
+      </div>
+    </div>
+    <!-- Result Card -->
+    <div class="after-card" style="width:100%;background:#fff;border-radius:18px;box-shadow:0 4px 24px #b000f022;border:1.5px solid #e9e1f7;padding:1.2em 1em;display:flex;flex-direction:column;align-items:center;">
+      <div class="after-label" style="color:#6A0DAD;font-size:1.15rem;font-weight:700;margin-bottom:0.7em;">Result</div>
+      <div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:#f6f0ff;border-radius:14px;overflow:hidden;">
+        {% if after_image_url %}
+          <img src="{{ after_image_url }}" alt="Result" style="object-fit:contain;width:100%;height:100%;max-height:220px;border-radius:12px;box-shadow:0 2px 8px #b000f022;margin-bottom:0.7em;">
+        {% else %}
+          <img src="https://placehold.co/320x220?text=No+Result" alt="No Result" style="object-fit:contain;width:100%;height:100%;max-height:220px;border-radius:12px;box-shadow:0 2px 8px #b000f022;margin-bottom:0.7em;">
+        {% endif %}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.7em;width:100%;margin-top:1.2em;align-items:center;">
+        {% if after_image_url %}
+        <a id="download-btn" class="btn-accent" href="{{ after_image_url }}" download style="background:#6A0DAD;width:100%;max-width:220px;text-align:center;">Download</a>
+        {% endif %}
+        <button onclick="window.location.reload()" class="reset-btn" style="background:#fff;color:#6A0DAD;border:2px solid #6A0DAD;border-radius:999px;padding:0.9em 2.2em;font-weight:700;font-size:1.13rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;transition:background 0.2s;width:100%;max-width:220px;">New Upload</button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+<style>
+:root {
+    --primary: #6A0DAD;
+    --primary-hover: #6A0DAD;
+}
+
+@media (max-width: 900px) {
+  .feature-layout-row { flex-direction:column !important; gap:1.5em !important; }
+  .result-side { width:100% !important; max-width:100% !important; }
+}
+</style>

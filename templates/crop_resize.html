@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-main" style="max-width:520px;margin:40px auto;background:#fff;border-radius:22px;box-shadow:0 8px 32px #b000f022,0 2px 8px #b000f011;border:1.5px solid #e9e1f7;padding:2.5em 2em;">
+    <div style="text-align:center;margin-bottom:1.2em;">
+        <span class="iconify" data-icon="mdi:crop" style="font-size:3.2rem;color:#6A0DAD;"></span>
+    </div>
+    <h1 style="color:#6A0DAD;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:2rem;font-weight:800;margin-bottom:1.2em;">Crop & Resize Image</h1>
+    <form id="cropForm" method="POST" enctype="multipart/form-data" style="margin-bottom:2em;display:flex;flex-direction:column;align-items:center;gap:1.2em;">
+        <label style="width:100%;text-align:center;">
+            <span style="font-size:1.05em;font-weight:600;">Upload Image</span><br>
+            <input type="file" id="imageInput" name="image" accept="image/*" required style="padding:0.7em 1em;border-radius:10px;border:1.5px solid #D4B2FF;width:100%;margin-top:0.5em;">
+        </label>
+        <div style="width:100%;text-align:center;">
+            <img id="preview" style="max-width:100%;display:none;border-radius:14px;box-shadow:0 2px 8px #b000f022;">
+        </div>
+        <div id="crop-hint" style="display:none;text-align:center;color:#6A0DAD;font-size:1em;margin:0.7em 0 0.2em 0;">
+            <span class="iconify" data-icon="mdi:gesture-tap" style="vertical-align:middle;font-size:1.2em;"></span>
+            Drag to select crop area
+        </div>
+        <div style="display:flex;gap:1em;justify-content:center;width:100%;margin-top:0.5em;">
+            <label style="font-size:0.98em;">Resize Width:
+                <input type="number" name="resize_w" value="100" min="1" style="width:70px;border-radius:8px;border:1px solid #D4B2FF;padding:0.3em 0.6em;">
+            </label>
+            <label style="font-size:0.98em;">Resize Height:
+                <input type="number" name="resize_h" value="100" min="1" style="width:70px;border-radius:8px;border:1px solid #D4B2FF;padding:0.3em 0.6em;">
+            </label>
+        </div>
+        <input type="hidden" name="x">
+        <input type="hidden" name="y">
+        <input type="hidden" name="w">
+        <input type="hidden" name="h">
+        <button type="submit" class="btn-accent" style="background:#6A0DAD;color:#fff;border:none;border-radius:999px;padding:0.9em 2.2em;font-weight:700;font-size:1.13rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;transition:background 0.2s;">
+            <span class="iconify" data-icon="mdi:crop" style="font-size:1.3em;vertical-align:middle;margin-right:0.5em;"></span>
+            Crop & Resize
+        </button>
+    </form>
+    {% if result_url %}
+        <div style="text-align:center;">
+            <img src="{{ result_url }}" style="max-width:100%;border-radius:12px;box-shadow:0 2px 8px #b000f022;">
+            <a href="{{ result_url }}" download class="btn-accent" style="margin-top:1em;display:inline-block;background:#6A0DAD;color:#fff;border:none;border-radius:999px;padding:0.8em 2em;font-weight:700;font-size:1.08rem;font-family:'Poppins',Arial,sans-serif;cursor:pointer;text-decoration:none;transition:background 0.2s;">
+                <span class="iconify" data-icon="mdi:download" style="font-size:1.2em;vertical-align:middle;margin-right:0.5em;"></span>
+                Download
+            </a>
+        </div>
+    {% endif %}
+    {% if error %}
+        <div style="color:#b00020;text-align:center;margin-top:1.5em;font-weight:600;">{{ error }}</div>
+    {% endif %}
+</div>
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+let cropper;
+const preview = document.getElementById('preview');
+const hint = document.getElementById('crop-hint');
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        preview.src = evt.target.result;
+        preview.style.display = 'block';
+        hint.style.display = 'block';
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(preview, {
+            aspectRatio: NaN,
+            viewMode: 1,
+            autoCropArea: 1,
+            movable: true,
+            zoomable: true,
+            scalable: true,
+            crop(event) {
+                document.querySelector('input[name="x"]').value = Math.round(event.detail.x);
+                document.querySelector('input[name="y"]').value = Math.round(event.detail.y);
+                document.querySelector('input[name="w"]').value = Math.round(event.detail.width);
+                document.querySelector('input[name="h"]').value = Math.round(event.detail.height);
+            }
+        });
+    };
+    reader.readAsDataURL(file);
+});
+</script>
+{% endblock %}
